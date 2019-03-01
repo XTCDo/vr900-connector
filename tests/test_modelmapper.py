@@ -1,6 +1,6 @@
 import json
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 from tests.testutil import TestUtil
 from vr900connector.model import Mapper, constants
@@ -8,51 +8,48 @@ from vr900connector.model import Mapper, constants
 
 class ModelMapperTest(unittest.TestCase):
 
-    def setUp(self):
-        self.mapper = Mapper()
-
     def test_map_quick_mode(self):
         with open(TestUtil.path("files/responses/systemcontrol_hotwater_boost"), 'r') as file:
             system = json.loads(file.read())
 
-        quick_mode = self.mapper.quick_mode(system)
+        quick_mode = Mapper.quick_mode(system)
         self.assertEqual(constants.QM_HOTWATER_BOOST, quick_mode.name)
 
     def test_map_no_quick_mode(self):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
             system = json.loads(file.read())
 
-        quick_mode = self.mapper.quick_mode(system)
+        quick_mode = Mapper.quick_mode(system)
         self.assertIsNone(quick_mode)
 
     def test_map_outdoor_temp(self):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
             system = json.loads(file.read())
 
-        temp = self.mapper.outdoor_temp(system)
+        temp = Mapper.outdoor_temp(system)
         self.assertEqual(6.3, temp)
 
     def test_map_no_outdoor_temp(self):
         with open(TestUtil.path('files/responses/systemcontrol_no_outside_temp'), 'r') as file:
             system = json.loads(file.read())
 
-        temp = self.mapper.outdoor_temp(system)
+        temp = Mapper.outdoor_temp(system)
         self.assertIsNone(temp)
 
     def test_installation_name(self):
         with open(TestUtil.path('files/responses/facilities'), 'r') as file:
             facilities = json.loads(file.read())
 
-        name = self.mapper.installation_name(facilities)
+        name = Mapper.installation_name(facilities)
         self.assertEqual("Home", name)
 
     def test_rooms_none(self):
-        rooms = self.mapper.rooms(None)
+        rooms = Mapper.rooms(None)
         self.assertIsNotNone(rooms)
         self.assertEqual(0, len(rooms))
 
     def test_rooms_empty(self):
-        rooms = self.mapper.rooms(dict())
+        rooms = Mapper.rooms(dict())
         self.assertIsNotNone(rooms)
         self.assertEqual(0, len(rooms))
 
@@ -60,7 +57,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/rooms'), 'r') as file:
             raw_rooms = json.loads(file.read())
 
-        rooms = self.mapper.rooms(raw_rooms)
+        rooms = Mapper.rooms(raw_rooms)
         self.assertIsNotNone(rooms)
         self.assertEqual(4, len(rooms))
 
@@ -79,7 +76,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/rooms_quick_veto'), 'r') as file:
             raw_rooms = json.loads(file.read())
 
-        rooms = self.mapper.rooms(raw_rooms)
+        rooms = Mapper.rooms(raw_rooms)
         self.assertIsNotNone(rooms)
         self.assertEqual(4, len(rooms))
 
@@ -99,7 +96,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/rooms'), 'r') as file:
             raw_rooms = json.loads(file.read())
 
-        rooms = self.mapper.rooms(raw_rooms)
+        rooms = Mapper.rooms(raw_rooms)
         self.assertIsNotNone(rooms)
         self.assertEqual(4, len(rooms))
 
@@ -133,7 +130,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
             raw_system = json.loads(file.read())
 
-        holiday_mode = self.mapper.holiday_mode(raw_system)
+        holiday_mode = Mapper.holiday_mode(raw_system)
         self.assertIsNotNone(holiday_mode)
         self.assertFalse(holiday_mode.active)
         self.assertIsNone(holiday_mode.start_date)
@@ -144,7 +141,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/systemcontrol_holiday'), 'r') as file:
             raw_system = json.loads(file.read())
 
-        holiday_mode = self.mapper.holiday_mode(raw_system)
+        holiday_mode = Mapper.holiday_mode(raw_system)
         self.assertIsNotNone(holiday_mode)
         self.assertTrue(holiday_mode.active)
         self.assertEqual(date(2019, 1, 2), holiday_mode.startDate)
@@ -155,7 +152,7 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
             raw_system = json.loads(file.read())
 
-        circulation = self.mapper.circulation(raw_system)
+        circulation = Mapper.circulation(raw_system)
         self.assertEqual(constants.MODE_AUTO, circulation.operation_mode)
         self.assertEqual("Control_DHW", circulation.id)
         self.assertIsNone(circulation.current_temperature)
@@ -167,11 +164,30 @@ class ModelMapperTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             raw_livereport = json.loads(file.read())
 
-        hot_water = self.mapper.domestic_hot_water(raw_system, raw_livereport)
+        hot_water = Mapper.domestic_hot_water(raw_system, raw_livereport)
         self.assertEqual(44.5, hot_water.current_temperature)
         self.assertEqual(51, hot_water.target_temperature)
         self.assertEqual(constants.MODE_AUTO, hot_water.operation_mode)
         self.assertEqual("Control_DHW", hot_water.id)
+
+    def test_boiler_status(self):
+        with open(TestUtil.path('files/responses/hvacstate'), 'r') as file:
+            hvac = json.loads(file.read())
+
+        boiler_status = Mapper.boiler_status(hvac)
+        self.assertEqual("...", boiler_status.hint)
+        self.assertEqual("...", boiler_status.description)
+        self.assertEqual("S.8", boiler_status.code)
+        self.assertEqual("Mode chauffage : Arrêt temporaire après une opération de chauffage", boiler_status.title)
+        self.assertEqual("VC BE 246/5-3", boiler_status.device_name)
+        self.assertEqual(datetime.fromtimestamp(1545896904282/1000), boiler_status.last_update)
+
+    def test_boiler_status_empty(self):
+        with open(TestUtil.path('files/responses/hvacstate_empty'), 'r') as file:
+            hvac = json.loads(file.read())
+
+        boiler_status = Mapper.boiler_status(hvac)
+        self.assertIsNone(boiler_status)
 
 
 if __name__ == '__main__':

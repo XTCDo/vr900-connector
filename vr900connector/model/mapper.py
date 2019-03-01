@@ -26,7 +26,7 @@ class Mapper:
     def rooms(raw_rooms):
         rooms = list()
         if raw_rooms:
-            for raw_room in raw_rooms.get("body", dict()).get("rooms"):
+            for raw_room in raw_rooms.get("body", dict()).get("rooms", list()):
                 rooms.append(Mapper.room(raw_room))
 
         return rooms
@@ -34,26 +34,28 @@ class Mapper:
     @staticmethod
     def room(raw_room):
         raw_room = raw_room.get("body") if raw_room.get("body") is not None else raw_room
-        config = raw_room.get("configuration", dict())
 
-        component_id = raw_room.get("roomIndex")
-        child_lock = config.get("childLock")
-        target_temp = config.get("temperatureSetpoint")
-        current_temp = config.get("currentTemperature")
-        devices = Mapper.devices(config.get("devices"))
-        window_open = config.get("isWindowOpen")
-        name = config.get("name")
-        operation_mode = config.get("operationMode")
+        if raw_room:
+            config = raw_room.get("configuration", dict())
 
-        raw_quickVeto = config.get("quickVeto")
-        quick_veto = None
-        if raw_quickVeto:
-            quick_veto = QuickVeto(raw_quickVeto.get("remainingDuration"), config.get("temperatureSetpoint"))
+            component_id = raw_room.get("roomIndex")
+            child_lock = config.get("childLock")
+            target_temp = config.get("temperatureSetpoint")
+            current_temp = config.get("currentTemperature")
+            devices = Mapper.devices(config.get("devices"))
+            window_open = config.get("isWindowOpen")
+            name = config.get("name")
+            operation_mode = config.get("operationMode")
 
-        time_program = Mapper.time_program(raw_room.get("timeprogram"))
+            raw_quickVeto = config.get("quickVeto")
+            quick_veto = None
+            if raw_quickVeto:
+                quick_veto = QuickVeto(raw_quickVeto.get("remainingDuration"), config.get("temperatureSetpoint"))
 
-        return Room(component_id, name, time_program, current_temp, target_temp, operation_mode, quick_veto, child_lock,
-                    window_open, devices)
+            time_program = Mapper.time_program(raw_room.get("timeprogram"))
+
+            return Room(component_id, name, time_program, current_temp, target_temp, operation_mode, quick_veto, child_lock,
+                        window_open, devices)
 
     @staticmethod
     def devices(raw_devices):
@@ -110,7 +112,7 @@ class Mapper:
 
     @staticmethod
     def boiler_status(hvac_state):
-        hvac_state_info = Mapper.__find_hvac_message_status(hvac_state)
+        hvac_state_info = Mapper._find_hvac_message_status(hvac_state)
         if hvac_state_info:
             timestamp = hvac_state_info.get("timestamp")
             last_update = None
@@ -164,7 +166,7 @@ class Mapper:
 
     @staticmethod
     def domestic_hot_water(full_system, live_report):
-        hot_water_list = full_system.get("body", dict()).get("dhw", list())
+        hot_water_list = full_system.get("body", dict()).get("dhw")
 
         if hot_water_list:
             raw_hot_water = hot_water_list[0].get("hotwater")
@@ -173,7 +175,7 @@ class Mapper:
                 operation_mode = raw_hot_water.get("configuration", dict()).get("operation_mode")
                 time_program = Mapper.time_program(raw_hot_water.get("timeprogram", dict()), "mode")
                 dwh_id = hot_water_list[0].get("_id")
-                dhw_report = Mapper.__find_dhw_temperature_report(live_report)
+                dhw_report = Mapper._find_dhw_temperature_report(live_report)
 
                 current_temp = None
                 name = None
@@ -198,15 +200,15 @@ class Mapper:
                 return Circulation(dhw_id, name, time_program, operation_mode)
 
     @staticmethod
-    def __find_hvac_message_status(hvac_state):
-        for message in hvac_state.get("body", dict()).get("errorMessages"):
+    def _find_hvac_message_status(hvac_state):
+        for message in hvac_state.get("body", dict()).get("errorMessages", dict()):
             if message.get("type") == "STATUS":
                 return message
 
         return None
 
     @staticmethod
-    def __find_water_pressure_report(live_report):
+    def _find_water_pressure_report(live_report):
         for device in live_report.get("body", dict()).get("devices", list()):
             for report in device.get("reports", list()):
                 if report.get("associated_device_function") == "HEATING" and report.get("_id") == "WaterPressureSensor":
@@ -215,7 +217,7 @@ class Mapper:
         return None
 
     @staticmethod
-    def __find_boiler_temperature_report(live_report):
+    def _find_boiler_temperature_report(live_report):
         for device in live_report.get("body", dict()).get("devices", list()):
             for report in device.get("reports", list()):
                 if report.get("associated_device_function") == "HEATING" \
@@ -225,7 +227,7 @@ class Mapper:
         return None
 
     @staticmethod
-    def __find_dhw_temperature_report(live_report):
+    def _find_dhw_temperature_report(live_report):
         for device in live_report.get("body", dict()).get("devices", list()):
             for report in device.get("reports", list()):
                 if report.get("associated_device_function") == "DHW" \
@@ -235,7 +237,7 @@ class Mapper:
         return None
 
     @staticmethod
-    def __find_zone_quick_veto_timestamp(zone_id, meta):
+    def _find_zone_quick_veto_timestamp(zone_id, meta):
         for state in meta.get("resourceState", list()):
             if state.get("link", dict()).get("resourceLink", "") \
                     .find("/zones/" + zone_id + "/configuration/quick_veto"):
@@ -243,7 +245,7 @@ class Mapper:
         return None
 
     @staticmethod
-    def __find_dhw_quick_veto_timestamp(meta):
+    def _find_dhw_quick_veto_timestamp(meta):
         for state in meta.get("resourceState", list()):
             if state.get("link", dict()).get("resourceLink", "") \
                     .find("/systemcontrol/v1/configuration/quickmode"):
@@ -251,7 +253,7 @@ class Mapper:
         return None
 
     @staticmethod
-    def __get_delta(start_time, time_to_add):
+    def _get_delta(start_time, time_to_add):
         end_time = start_time + time_to_add
         delta = (end_time / 1000) - datetime.datetime.now().timestamp()
         return int(delta / 60)
