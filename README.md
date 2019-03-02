@@ -1,6 +1,8 @@
 # vr900-connector
-
+![GitHub](https://img.shields.io/github/license/thomasgermain/vr900-connector.svg)
 [![Build Status](https://travis-ci.com/thomasgermain/vr900-connector.svg?branch=develop)](https://travis-ci.com/thomasgermain/vr900-connector)
+![PyPI](https://img.shields.io/pypi/v/vr900-connector.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vr900-connector.svg)
 
 <b>Please note that the project is still in beta state, it means  I may do some (un)intentional breaking changes</b>
 
@@ -125,7 +127,6 @@ Output:
         ]
     }
 }
-
 ```
 
 
@@ -214,7 +215,7 @@ The main object to manipulate is
  This layer is hiding you  this complexity
 
 ## Todos
-* Add some doc for pypi
 * Proper way to deploy to pypi and create tag
+* Add coverage perc (coverall.io, codecov ?)
+* Add supported python version
 * Add updates method (alter system config)
-* find a more fancy name

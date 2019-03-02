@@ -18,3 +18,8 @@ install:
 
 script:
   - pytest
+
+#run scripts to deploy to pypi:
+#python3 setup.py sdist
+#twine check dist/*
+#twine upload

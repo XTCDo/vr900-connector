@@ -1,9 +1,16 @@
 from setuptools import setup, find_packages
 
+from os import path
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(name='vr900-connector',
       version='0.1.0',
       description='Connector to handle vaillant vr900/vr920 data',
-      long_description='Connector to handle vaillant vr900/vr920 data',
+      long_description_content_type='text/markdown',
+      long_description=long_description,
       url='https://github.com/thomasgermain/vr900-connector.git',
       author='Thomas Germain',
       author_email='thomas.germain@live.be',
@@ -11,9 +18,16 @@ setup(name='vr900-connector',
       packages=find_packages(exclude=('tests', 'tests/*', '/tests', '/tests/*')),
       zip_safe=False,
       setup_requires=["pytest-runner"],
-      install_requires=["requests", "responses", "pytest"],
+      install_requires=["requests", "jsonpickle", "responses"],
       entry_points={
           'console_scripts': [
               'vaillant=vaillant.__main__:main',
           ]
-      })
+      },
+      classifier=[
+          'Development Status :: 3 - Alpha'
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+      ]
+      )
