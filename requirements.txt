@@ -1,3 +1,3 @@
-responses
-requests
-jsonpickle
+responses>=0.10.0,<1.0.0
+requests>=2.20.0,<3.0.0
+jsonpickle>=1.0,<2.0

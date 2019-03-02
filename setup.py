@@ -18,7 +18,10 @@ setup(name='vr900-connector',
       packages=find_packages(exclude=('tests', 'tests/*', '/tests', '/tests/*')),
       zip_safe=False,
       setup_requires=["pytest-runner"],
-      install_requires=["requests", "jsonpickle", "responses"],
+      install_requires=[
+          "requests>=2.20.0,<3.0.0",
+          "jsonpickle>=1.0,<2.0"
+      ],
       entry_points={
           'console_scripts': [
               'vaillant=vaillant.__main__:main',

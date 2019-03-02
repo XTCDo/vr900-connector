@@ -1,12 +1,11 @@
 # vr900-connector
-![GitHub](https://img.shields.io/github/license/thomasgermain/vr900-connector.svg)
+![PyPI - License](https://img.shields.io/pypi/l/vr900-connector.svg?color=44cc11)
 [![Build Status](https://travis-ci.com/thomasgermain/vr900-connector.svg?branch=develop)](https://travis-ci.com/thomasgermain/vr900-connector)
 ![PyPI](https://img.shields.io/pypi/v/vr900-connector.svg)
+![PyPI - Status](https://img.shields.io/pypi/status/vr900-connector.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vr900-connector.svg)
 
 <b>Please note that the project is still in beta state, it means  I may do some (un)intentional breaking changes</b>
-
-Python 3.5+
 
 For now, the connector is ony able to read data from the system (but it's planned to be able to alter system as well), it only handles only one heating system (one serial number). I cannot test more than that since I only have heating system at home.
 
@@ -217,5 +216,4 @@ The main object to manipulate is
 ## Todos
 * Proper way to deploy to pypi and create tag
 * Add coverage perc (coverall.io, codecov ?)
-* Add supported python version
 * Add updates method (alter system config)
