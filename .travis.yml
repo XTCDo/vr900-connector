@@ -18,6 +18,8 @@ install:
 
 script:
   - pytest
+after_success:
+  - coveralls
 
 #run scripts to deploy to pypi:
 #python3 setup.py sdist
