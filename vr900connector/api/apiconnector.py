@@ -126,8 +126,8 @@ class ApiConnector:
 
             if response.status_code > 399:
                 if not re_login and response.status_code == 401:
-                    _LOGGER.debug('Call to %s failed with HTTP 401, will try to re-login')
-                    self._secure_call(method, url, payload, True)
+                    _LOGGER.debug('Call to %s failed with HTTP 401, will try to re-login', safe_url)
+                    return self._secure_call(method, url, payload, True)
                 else:
                     raise ApiError('Received error from server url: ' + safe_url + ' and method ' + method, response)
             if response.text:
