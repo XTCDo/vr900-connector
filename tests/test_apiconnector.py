@@ -31,16 +31,16 @@ class ApiConnectorTest(unittest.TestCase):
         responses.add(responses.GET, urls.facilities_list(), json=facilities_data, status=200)
 
         data = self.connector.get(urls.facilities_list())
-        self.assertEqual(data, facilities_data)
-        self.assertEqual(len(responses.calls), 4)
-        self.assertEqual(responses.calls[0].request.url, urls.new_token())
-        self.assertEqual(responses.calls[1].request.url, urls.authenticate())
-        self.assertEqual(responses.calls[2].request.url, urls.facilities_list())
-        self.assertEqual(responses.calls[3].request.url, urls.facilities_list())
+        self.assertEqual(facilities_data, data)
+        self.assertEqual(4, len(responses.calls))
+        self.assertEqual(urls.new_token(), responses.calls[0].request.url)
+        self.assertEqual(urls.authenticate(), responses.calls[1].request.url)
+        self.assertEqual(urls.facilities_list(), responses.calls[2].request.url)
+        self.assertEqual(urls.facilities_list(), responses.calls[3].request.url)
 
     @responses.activate
     def test_re_login(self):
-        serial_number = TestUtil.mock_auth_success()
+        serial_number = TestUtil.mock_full_auth_success()
 
         repeaters_url = urls.repeaters().format(serial_number=serial_number)
         responses.add(responses.GET, repeaters_url, status=401)
@@ -49,11 +49,11 @@ class ApiConnectorTest(unittest.TestCase):
             self.connector.get(urls.repeaters())
             self.fail('Error expected')
         except ApiError as e:
-            self.assertEqual(len(responses.calls), 8)
-            self.assertEqual(e.response.status_code, 401)
-            self.assertEqual(e.response.url, repeaters_url)
-            self.assertEqual(responses.calls[3].request.url, repeaters_url)
-            self.assertEqual(responses.calls[7].request.url, repeaters_url)
+            self.assertEqual(8, len(responses.calls))
+            self.assertEqual(401, e.response.status_code)
+            self.assertEqual(repeaters_url, e.response.url)
+            self.assertEqual(repeaters_url, responses.calls[3].request.url)
+            self.assertEqual(repeaters_url, responses.calls[7].request.url)
 
     @responses.activate
     def test_cookie_failed(self):
@@ -67,7 +67,7 @@ class ApiConnectorTest(unittest.TestCase):
             self.connector.get(urls.facilities_list())
             self.fail("Error expected")
         except ApiError as e:
-            self.assertEqual(e.message, "Cannot get cookies")
+            self.assertEqual("Cannot get cookies", e.message)
 
     @responses.activate
     def test_login_wrong_authentication(self):
@@ -80,7 +80,49 @@ class ApiConnectorTest(unittest.TestCase):
             self.connector.get(urls.facilities_list())
             self.fail("Error expected")
         except ApiError as e:
-            self.assertEqual(e.message, "Authentication failed")
+            self.assertEqual("Authentication failed", e.message)
+
+    @responses.activate
+    def test_put(self):
+        serial = TestUtil.mock_full_auth_success()
+
+        responses.add(responses.PUT, urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.put(urls.rooms())
+
+        self.assertEqual(4, len(responses.calls))
+        self.assertEqual('PUT', responses.calls[3].request.method)
+
+
+    @responses.activate
+    def test_post(self):
+        serial = TestUtil.mock_full_auth_success()
+
+        responses.add(responses.POST, urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.post(urls.rooms())
+
+        self.assertEqual(4, len(responses.calls))
+        self.assertEqual('POST', responses.calls[3].request.method)
+
+    @responses.activate
+    def test_delete(self):
+        serial = TestUtil.mock_full_auth_success()
+
+        responses.add(responses.DELETE, urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.delete(urls.rooms())
+
+        self.assertEqual(4, len(responses.calls))
+        self.assertEqual('DELETE', responses.calls[3].request.method)
+
+    @responses.activate
+    def test_cannot_get_serial(self):
+        TestUtil.mock_authentication_success()
+        TestUtil.mock_token_success()
+
+        try:
+            self.connector.get('')
+        except ApiError as e:
+            self.assertEqual("Cannot get serial number", e.message)
+
 
     # @responses.activate
     # def test_login_once(self):

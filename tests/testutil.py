@@ -20,16 +20,28 @@ class TestUtil:
         return path
 
     @staticmethod
-    def mock_auth_success():
-        with open(TestUtil.path('files/responses/facilities'), 'r') as file:
-            facilities_data = json.loads(file.read())
+    def mock_full_auth_success():
+        TestUtil.mock_authentication_success()
+        TestUtil.mock_token_success()
+        return TestUtil.mock_serial_success()
 
+    @staticmethod
+    def mock_token_success():
         with open(TestUtil.path('files/responses/token'), 'r') as file:
             token_data = json.loads(file.read())
 
         responses.add(responses.POST, urls.new_token(), json=token_data, status=200)
+
+    @staticmethod
+    def mock_authentication_success():
         responses.add(responses.POST, urls.authenticate(), status=200,
                       headers={"Set-Cookie": "test=value; path=/; HttpOnly; Secure"})
+
+    @staticmethod
+    def mock_serial_success():
+        with open(TestUtil.path('files/responses/facilities'), 'r') as file:
+            facilities_data = json.loads(file.read())
+
         responses.add(responses.GET, urls.facilities_list(), json=facilities_data, status=200)
 
         return facilities_data["body"]["facilitiesList"][0]["serialNumber"]

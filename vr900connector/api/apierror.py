@@ -11,7 +11,7 @@ class ApiError(Exception):
 
     Args:
         message: A message describing the error
-        response: The response returned by the API
+        response: The response returned by the API, if any
     """
 
     def __init__(self, message: str, response: Response):

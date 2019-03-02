@@ -14,7 +14,7 @@ class SystemManagerTest(unittest.TestCase):
 
     @responses.activate
     def test_system(self):
-        serial = TestUtil.mock_auth_success()
+        serial = TestUtil.mock_full_auth_success()
 
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             livereport_data = json.loads(file.read())
@@ -40,7 +40,7 @@ class SystemManagerTest(unittest.TestCase):
 
     @responses.activate
     def test_active_mode_hot_water_boost(self):
-        serial = TestUtil.mock_auth_success()
+        serial = TestUtil.mock_full_auth_success()
 
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             livereport_data = json.loads(file.read())
@@ -67,7 +67,7 @@ class SystemManagerTest(unittest.TestCase):
 
     @responses.activate
     def test_active_mode_system_off(self):
-        serial = TestUtil.mock_auth_success()
+        serial = TestUtil.mock_full_auth_success()
 
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             livereport_data = json.loads(file.read())
@@ -109,7 +109,7 @@ class SystemManagerTest(unittest.TestCase):
 
     @responses.activate
     def test_active_mode_zone_quick_veto(self):
-        serial = TestUtil.mock_auth_success()
+        serial = TestUtil.mock_full_auth_success()
 
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             livereport_data = json.loads(file.read())
@@ -137,7 +137,7 @@ class SystemManagerTest(unittest.TestCase):
 
     @responses.activate
     def test_active_mode_room_quick_veto(self):
-        serial = TestUtil.mock_auth_success()
+        serial = TestUtil.mock_full_auth_success()
 
         with open(TestUtil.path('files/responses/livereport'), 'r') as file:
             livereport_data = json.loads(file.read())
