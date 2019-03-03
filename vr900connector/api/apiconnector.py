@@ -142,7 +142,7 @@ class ApiConnector:
         except ApiError:
             raise
         except Exception as e:
-            raise ApiError('Cannot %s url: %s'.format(method, safe_url if safe_url else url), response) from e
+            raise ApiError('Cannot {} url: {}'.format(method, safe_url if safe_url else url), response) from e
 
     def _login(self, force_login: bool = False):
         try:

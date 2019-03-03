@@ -101,7 +101,6 @@ class ApiConnectorTest(unittest.TestCase):
         self.assertEqual(4, len(responses.calls))
         self.assertEqual('PUT', responses.calls[3].request.method)
 
-
     @responses.activate
     def test_post(self):
         serial = TestUtil.mock_full_auth_success()
@@ -149,7 +148,6 @@ class ApiConnectorTest(unittest.TestCase):
             self.assertIsNotNone(e.response)
             self.assertEqual(400, e.response.status_code)
 
-
     @responses.activate
     def test_logout_failed(self):
         TestUtil.mock_full_auth_success()
@@ -163,23 +161,41 @@ class ApiConnectorTest(unittest.TestCase):
             self.assertEqual(0, len(self.connector._session.cookies))
 
     @responses.activate
-    def call_empty_response_success(self):
+    def test_call_empty_response_success(self):
         serial = TestUtil.mock_full_auth_success()
 
-        responses.add(responses.GET, urls.rooms().format(serial_number=serial), json='', status=200)
+        responses.add(responses.GET, urls.rooms().format(serial_number=serial), status=200)
 
         result = self.connector.get(urls.rooms())
         self.assertEqual({"ok": "ok"}, result)
 
     @responses.activate
-    def call_error(self):
+    def test_call_error(self):
         serial = TestUtil.mock_full_auth_success()
 
         try:
             self.connector.get(urls.rooms())
             self.fail("Error expected")
-        except ApiError:
-            self.assertEqual("Cannot GET " + urls.rooms().format(serial_number=serial))
+        except ApiError as e:
+            self.assertEqual("Cannot GET url: " + urls.rooms().format(serial_number=serial), e.message)
+
+    @responses.activate
+    def test_request_token_error(self):
+        try:
+            self.connector.get('')
+            self.fail("Error expected")
+        except ApiError as e:
+            self.assertIsNone(e.response)
+            self.assertEqual('Error during authentication', e.message)
+
+    @responses.activate
+    def test_login_error(self):
+        try:
+            self.connector.get('')
+            self.fail("Error expected")
+        except ApiError as e:
+            self.assertIsNone(e.response)
+            self.assertEqual('Error during authentication', e.message)
 
     # @responses.activate
     # def test_login_once(self):
