@@ -57,10 +57,8 @@ class ApiConnectorTest(unittest.TestCase):
 
     @responses.activate
     def test_cookie_failed(self):
-        with open(TestUtil.path('files/responses/token'), 'r') as file:
-            token_data = json.loads(file.read())
+        TestUtil.mock_token_success()
 
-        responses.add(responses.POST, urls.new_token(), json=token_data, status=200)
         responses.add(responses.POST, urls.authenticate(), status=401)
 
         try:
@@ -68,6 +66,17 @@ class ApiConnectorTest(unittest.TestCase):
             self.fail("Error expected")
         except ApiError as e:
             self.assertEqual("Cannot get cookies", e.message)
+
+    @responses.activate
+    def test_cookie_failed_exception(self):
+        TestUtil.mock_token_success()
+
+        try:
+            self.connector.get(urls.facilities_list())
+            self.fail("Error expected")
+        except ApiError as e:
+            self.assertEqual("Error while getting cookies", e.message)
+            self.assertIsNone(e.response)
 
     @responses.activate
     def test_login_wrong_authentication(self):
@@ -120,9 +129,57 @@ class ApiConnectorTest(unittest.TestCase):
 
         try:
             self.connector.get('')
+            self.fail("Error expected")
         except ApiError as e:
             self.assertEqual("Cannot get serial number", e.message)
+            self.assertIsNone(e.response)
 
+    @responses.activate
+    def test_cannot_get_serial_bad_request(self):
+        TestUtil.mock_authentication_success()
+        TestUtil.mock_token_success()
+
+        responses.add(responses.GET, urls.facilities_list(), json='', status=400)
+
+        try:
+            self.connector.get('')
+            self.fail("Error expected")
+        except ApiError as e:
+            self.assertEqual("Cannot get serial number", e.message)
+            self.assertIsNotNone(e.response)
+            self.assertEqual(400, e.response.status_code)
+
+
+    @responses.activate
+    def test_logout_failed(self):
+        TestUtil.mock_full_auth_success()
+
+        try:
+            self.connector.logout()
+            self.fail("Error expected")
+        except ApiError as e:
+            self.assertEqual("Error during logout", e.message)
+            self.assertIsNone(self.connector._serial_number)
+            self.assertEqual(0, len(self.connector._session.cookies))
+
+    @responses.activate
+    def call_empty_response_success(self):
+        serial = TestUtil.mock_full_auth_success()
+
+        responses.add(responses.GET, urls.rooms().format(serial_number=serial), json='', status=200)
+
+        result = self.connector.get(urls.rooms())
+        self.assertEqual({"ok": "ok"}, result)
+
+    @responses.activate
+    def call_error(self):
+        serial = TestUtil.mock_full_auth_success()
+
+        try:
+            self.connector.get(urls.rooms())
+            self.fail("Error expected")
+        except ApiError:
+            self.assertEqual("Cannot GET " + urls.rooms().format(serial_number=serial))
 
     # @responses.activate
     # def test_login_once(self):
