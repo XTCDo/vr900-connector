@@ -1,13 +1,15 @@
 import json
 import unittest
-from inspect import getmembers, isfunction, signature
-from vr900connector.api import payloads
+import inspect
+from vr900connector.api.payloads import Payloads
 
 
 class TestPayloads(unittest.TestCase):
 
     def test_all_payload(self):
-        functions_list = [o for o in getmembers(payloads) if isfunction(o[1])]
+        functions_list = inspect.getmembers(Payloads, predicate=inspect.ismethod)
+
+        self.assertTrue(len(functions_list) > 0)
 
         for function in functions_list:
             args_name = self._get_args_name(function[1])
@@ -21,12 +23,12 @@ class TestPayloads(unittest.TestCase):
                     args.append('test')
 
                 f_kwargs = dict(zip(args_name, args))
-                url = function[1](**f_kwargs)
-                self._assert_function_call(url)
+                payload = function[1](**f_kwargs)
+                self._assert_function_call(payload)
 
     def _get_args_name(self, function):
         names = []
-        for item in signature(function).parameters.items():
+        for item in inspect.signature(function).parameters.items():
             names.append(item[0])
         return names
 

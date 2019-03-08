@@ -1,5 +1,4 @@
-from . import Component, TimeProgram, QuickVeto, ActiveMode
-from .constants import FROST_PROTECTION_TEMP, MODE_OFF, MODE_AUTO, QUICK_VETO, THERMOSTAT_MAX_TEMP, MODE_DAY, MODE_NIGHT
+from . import Component, TimeProgram, QuickVeto, ActiveMode, Constants
 
 
 class Zone(Component):
@@ -14,17 +13,17 @@ class Zone(Component):
         rbr: Set to True if the zone is controlled by rooms
     """
 
-    MODES = [MODE_AUTO, MODE_OFF, MODE_DAY, MODE_NIGHT, QUICK_VETO]
+    MODES = [Constants.MODE_AUTO, Constants.MODE_OFF, Constants.MODE_DAY, Constants.MODE_NIGHT, Constants.QUICK_VETO]
     """
     List of available modes for a zone
     """
 
-    MIN_TEMP = FROST_PROTECTION_TEMP
+    MIN_TEMP = Constants.FROST_PROTECTION_TEMP
     """
     Minimum temperature in celsius for a room, this is coming from documentation
     """
 
-    MAX_TEMP = THERMOSTAT_MAX_TEMP
+    MAX_TEMP = Constants.THERMOSTAT_MAX_TEMP
     """
     Maximum temperature celsius for a room, this is coming from my tests with android application, cannot go above 30
     """
@@ -39,11 +38,11 @@ class Zone(Component):
         self.rbr = rbr
 
     def _get_specific_active_mode(self) -> ActiveMode:
-        if self.operation_mode == MODE_OFF:
-            mode = ActiveMode(self.MIN_TEMP, MODE_OFF)
-        elif self.operation_mode == MODE_DAY:
-            mode = ActiveMode(self.target_temperature, MODE_DAY)
+        if self.operation_mode == Constants.MODE_OFF:
+            mode = ActiveMode(self.MIN_TEMP, Constants.MODE_OFF)
+        elif self.operation_mode == Constants.MODE_DAY:
+            mode = ActiveMode(self.target_temperature, Constants.MODE_DAY)
         else:  # MODE_NIGHT
-            mode = ActiveMode(self.target_min_temperature, MODE_NIGHT)
+            mode = ActiveMode(self.target_min_temperature, Constants.MODE_NIGHT)
 
         return mode

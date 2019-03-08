@@ -1,5 +1,4 @@
-from . import Component, TimeProgram, ActiveMode
-from .constants import MODE_ON, MODE_OFF, MODE_AUTO
+from . import Component, TimeProgram, ActiveMode, Constants
 
 
 class Circulation(Component):
@@ -8,7 +7,7 @@ class Circulation(Component):
     This class only exists to have a clean hierarchy
     """
 
-    MODES = [MODE_ON, MODE_OFF, MODE_AUTO]
+    MODES = [Constants.MODE_ON, Constants.MODE_OFF, Constants.MODE_AUTO]
     """
     List of mode available for circulation
     """

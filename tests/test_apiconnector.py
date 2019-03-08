@@ -1,5 +1,6 @@
 import json
 import unittest
+from unittest.mock import Mock
 
 import responses
 
@@ -196,6 +197,21 @@ class ApiConnectorTest(unittest.TestCase):
         except ApiError as e:
             self.assertIsNone(e.response)
             self.assertEqual('Error during authentication', e.message)
+
+    @responses.activate
+    def test_login_catch_exception(self):
+        TestUtil.mock_full_auth_success()
+
+        self.connector._create_or_load_session = Mock(side_effect=Exception('Test exception'))
+        self.connector._session.cookies = None
+
+        try:
+            self.connector.get('')
+        except ApiError as e:
+            self.assertIsNone(e.response)
+            self.assertEqual('Error during login', e.message)
+
+
 
     # @responses.activate
     # def test_login_once(self):

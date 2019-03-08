@@ -5,8 +5,7 @@ import responses
 
 from tests.testutil import TestUtil
 from vr900connector.api import urls
-from vr900connector.model import HotWater
-from vr900connector.model.constants import QUICK_VETO, QM_HOTWATER_BOOST, FROST_PROTECTION_TEMP, QM_SYSTEM_OFF
+from vr900connector.model import HotWater, Constants, QuickMode
 from vr900connector.systemmanager import SystemManager
 
 
@@ -62,7 +61,7 @@ class SystemManagerTest(unittest.TestCase):
         self.assertIsNotNone(system)
 
         active_mode = system.get_active_mode_hot_water()
-        self.assertEqual(QM_HOTWATER_BOOST, active_mode.current_mode)
+        self.assertEqual(Constants.QM_HOTWATER_BOOST, active_mode.current_mode)
         self.assertEqual(51, active_mode.target_temperature)
 
     @responses.activate
@@ -89,23 +88,23 @@ class SystemManagerTest(unittest.TestCase):
         self.assertIsNotNone(system)
 
         active_mode = system.get_active_mode_hot_water()
-        self.assertEqual(QM_SYSTEM_OFF, active_mode.current_mode)
+        self.assertEqual(QuickMode.QM_SYSTEM_OFF.name, active_mode.current_mode)
         self.assertEqual(HotWater.MIN_TEMP, active_mode.target_temperature)
 
         active_mode = system.get_active_mode_circulation()
-        self.assertEqual(QM_SYSTEM_OFF, active_mode.current_mode)
+        self.assertEqual(QuickMode.QM_SYSTEM_OFF.name, active_mode.current_mode)
         self.assertIsNone(active_mode.target_temperature)
 
         for room in system.rooms:
             active_mode = system.get_active_mode_room(room)
-            self.assertEqual(QM_SYSTEM_OFF, active_mode.current_mode)
-            self.assertEqual(FROST_PROTECTION_TEMP, active_mode.target_temperature)
+            self.assertEqual(QuickMode.QM_SYSTEM_OFF.name, active_mode.current_mode)
+            self.assertEqual(Constants.FROST_PROTECTION_TEMP, active_mode.target_temperature)
 
         for zone in system.zones:
             if not zone.rbr:
                 active_mode = system.get_active_mode_zone(zone)
-                self.assertEqual(QM_SYSTEM_OFF, active_mode.current_mode)
-                self.assertEqual(FROST_PROTECTION_TEMP, active_mode.target_temperature)
+                self.assertEqual(QuickMode.QM_SYSTEM_OFF.name, active_mode.current_mode)
+                self.assertEqual(Constants.FROST_PROTECTION_TEMP, active_mode.target_temperature)
 
     @responses.activate
     def test_active_mode_zone_quick_veto(self):
@@ -132,7 +131,7 @@ class SystemManagerTest(unittest.TestCase):
 
         zone = system.get_zone("Control_ZO2")
         active_mode = system.get_active_mode_zone(zone)
-        self.assertEqual(QUICK_VETO, active_mode.current_mode)
+        self.assertEqual(Constants.QUICK_VETO, active_mode.current_mode)
         self.assertEqual(18.5, active_mode.target_temperature)
 
     @responses.activate
@@ -160,7 +159,7 @@ class SystemManagerTest(unittest.TestCase):
 
         room = system.get_room(0)
         active_mode = system.get_active_mode_room(room)
-        self.assertEqual(QUICK_VETO, active_mode.current_mode)
+        self.assertEqual(Constants.QUICK_VETO, active_mode.current_mode)
         self.assertEqual(20.0, active_mode.target_temperature)
 
     def _mock_urls(self, hvacstate_data, livereport_data, rooms_data, serial, system_data):

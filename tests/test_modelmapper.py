@@ -3,7 +3,7 @@ import unittest
 from datetime import date, datetime
 
 from tests.testutil import TestUtil
-from vr900connector.model import Mapper, constants
+from vr900connector.model import Mapper, Constants
 
 
 class ModelMapperTest(unittest.TestCase):
@@ -13,7 +13,14 @@ class ModelMapperTest(unittest.TestCase):
             system = json.loads(file.read())
 
         quick_mode = Mapper.quick_mode(system)
-        self.assertEqual(constants.QM_HOTWATER_BOOST, quick_mode.name)
+        self.assertEqual(Constants.QM_HOTWATER_BOOST, quick_mode.name)
+
+    def test_map_quick_mode_zone_quick_veto(self):
+        with open(TestUtil.path("files/responses/systemcontrol_quick_veto"), 'r') as file:
+            system = json.loads(file.read())
+
+        quick_mode = Mapper.quick_mode(system)
+        self.assertIsNone(quick_mode)
 
     def test_map_no_quick_mode(self):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
@@ -65,7 +72,7 @@ class ModelMapperTest(unittest.TestCase):
 
         self.assertEqual(0, room0.id)
         self.assertEqual("Room 1", room0.name)
-        self.assertEqual(constants.MODE_AUTO, room0.operation_mode)
+        self.assertEqual(Constants.MODE_AUTO, room0.operation_mode)
         self.assertEqual(False, room0.window_open)
         self.assertEqual(17.5, room0.target_temperature)
         self.assertEqual(17.9, room0.current_temperature)
@@ -84,7 +91,7 @@ class ModelMapperTest(unittest.TestCase):
 
         self.assertEqual(0, room0.id)
         self.assertEqual("Room 1", room0.name)
-        self.assertEqual(constants.MODE_AUTO, room0.operation_mode)
+        self.assertEqual(Constants.MODE_AUTO, room0.operation_mode)
         self.assertEqual(False, room0.window_open)
         self.assertEqual(20.0, room0.target_temperature)
         self.assertEqual(17.9, room0.current_temperature)
@@ -153,7 +160,7 @@ class ModelMapperTest(unittest.TestCase):
             raw_system = json.loads(file.read())
 
         circulation = Mapper.circulation(raw_system)
-        self.assertEqual(constants.MODE_AUTO, circulation.operation_mode)
+        self.assertEqual(Constants.MODE_AUTO, circulation.operation_mode)
         self.assertEqual("Control_DHW", circulation.id)
         self.assertIsNone(circulation.current_temperature)
         self.assertIsNone(circulation.target_temperature)
@@ -167,7 +174,7 @@ class ModelMapperTest(unittest.TestCase):
         hot_water = Mapper.domestic_hot_water(raw_system, raw_livereport)
         self.assertEqual(44.5, hot_water.current_temperature)
         self.assertEqual(51, hot_water.target_temperature)
-        self.assertEqual(constants.MODE_AUTO, hot_water.operation_mode)
+        self.assertEqual(Constants.MODE_AUTO, hot_water.operation_mode)
         self.assertEqual("Control_DHW", hot_water.id)
 
     def test_boiler_status(self):

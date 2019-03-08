@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from . import urls, ApiError, constants
+from . import urls, ApiError, Defaults
 from ..util import FileUtils
 
 _LOGGER = logging.getLogger('Connector')
@@ -34,8 +34,8 @@ class ApiConnector:
         re-login between sessions
     """
 
-    def __init__(self, user: str, password: str, smart_phone_id: str = constants.DEFAULT_SMART_PHONE_ID,
-                 file_path: str = constants.DEFAULT_FILES_PATH):
+    def __init__(self, user: str, password: str, smart_phone_id: str = Defaults.SMART_PHONE_ID,
+                 file_path: str = Defaults.FILES_PATH):
         self._user = user
         self._password = password
         self._smart_phone_Id = smart_phone_id
@@ -94,16 +94,16 @@ class ApiConnector:
 
     # def set_hotwater_setpoint_temperature(self, dhw_id, temperature):
     #     return self._secure_call('PUT',
-    #                            UrlFormatter.format(constants.DHW_HOTWATER_SET_POINT_TEMPERATURE_URL, dhw=str(dhw_id)),
+    #                            UrlFormatter.format(Defaults.DHW_HOTWATER_SET_POINT_TEMPERATURE_URL, dhw=str(dhw_id)),
     #                               {'temperature_setpoint': temperature})
     #
     # def set_hotwater_operation_mode(self, dhw_id, mode):
     #     return self._secure_call('PUT',
-    #                               UrlFormatter.format(constants.DHW_HOTWATER_OPERATION_MODE_URL, dhw=str(dhw_id)),
+    #                               UrlFormatter.format(Defaults.DHW_HOTWATER_OPERATION_MODE_URL, dhw=str(dhw_id)),
     #                               {"operation_mode": mode})
     #
     # def remove_quick_mode(self):
-    #     return self._secure_call('DELETE', constants.SYSTEM_CONTROL_QUICK_MODE_URL)
+    #     return self._secure_call('DELETE', Defaults.SYSTEM_CONTROL_QUICK_MODE_URL)
     #
     # def set_quick_mode(self, mode, duration=None):
     #     """Duration in minutes, most of the time, the duration will be overridden by vaillant"""
@@ -115,7 +115,7 @@ class ApiConnector:
     #                 "duration": duration if duration is not None else 0
     #             }
     #     }
-    #     return self._secure_call('PUT', constants.SYSTEM_CONTROL_QUICK_MODE_URL, payload=payload)
+    #     return self._secure_call('PUT', Defaults.SYSTEM_CONTROL_QUICK_MODE_URL, payload=payload)
 
     def _secure_call(self, method: str, url: str, payload=None, re_login: bool = False):
         response = None
@@ -234,20 +234,20 @@ class ApiConnector:
         self._session = requests.session()
 
     def _save_cookies_to_file(self):
-        FileUtils.save_to_file(self._session.cookies, self._file_path, constants.DEFAULT_COOKIE_FILE_NAME)
+        FileUtils.save_to_file(self._session.cookies, self._file_path, Defaults.COOKIE_FILE_NAME)
 
     def _save_serial_number_to_file(self):
-        FileUtils.save_to_file(self._serial_number, self._file_path, constants.DEFAULT_SERIAL_NUMBER_FILE_NAME)
+        FileUtils.save_to_file(self._serial_number, self._file_path, Defaults.SERIAL_NUMBER_FILE_NAME)
 
     def _load_cookies_from_file(self):
-        return FileUtils.load_from_file(self._file_path, constants.DEFAULT_COOKIE_FILE_NAME)
+        return FileUtils.load_from_file(self._file_path, Defaults.COOKIE_FILE_NAME)
 
     def _load_serial_number_from_file(self):
-        return FileUtils.load_from_file(self._file_path, constants.DEFAULT_SERIAL_NUMBER_FILE_NAME)
+        return FileUtils.load_from_file(self._file_path, Defaults.SERIAL_NUMBER_FILE_NAME)
 
     def _clear_cookie(self):
-        FileUtils.delete_file(self._file_path, constants.DEFAULT_COOKIE_FILE_NAME)
+        FileUtils.delete_file(self._file_path, Defaults.COOKIE_FILE_NAME)
 
     def _clear_serial_number(self):
-        FileUtils.delete_file(self._file_path, constants.DEFAULT_SERIAL_NUMBER_FILE_NAME)
+        FileUtils.delete_file(self._file_path, Defaults.SERIAL_NUMBER_FILE_NAME)
         self._serial_number = None

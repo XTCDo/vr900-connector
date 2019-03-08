@@ -1,5 +1,4 @@
-from . import TimeProgram, Component, ActiveMode
-from .constants import MODE_ON, MODE_AUTO, MODE_OFF
+from . import TimeProgram, Component, ActiveMode, Constants
 
 
 class HotWater(Component):
@@ -7,7 +6,7 @@ class HotWater(Component):
     This class represents the hot water of your system
     """
 
-    MODES = [MODE_ON, MODE_OFF, MODE_AUTO]
+    MODES = [Constants.MODE_ON, Constants.MODE_OFF, Constants.MODE_AUTO]
     """
     List of modes available for hot water
     """
@@ -29,9 +28,9 @@ class HotWater(Component):
                          None)
 
     def _get_specific_active_mode(self) -> ActiveMode:
-        if self.operation_mode == MODE_ON:
-            mode = ActiveMode(self.target_temperature, MODE_ON)
+        if self.operation_mode == Constants.MODE_ON:
+            mode = ActiveMode(self.target_temperature, Constants.MODE_ON)
         else:  # MODE_OFF
-            mode = ActiveMode(HotWater.MIN_TEMP, MODE_OFF)
+            mode = ActiveMode(HotWater.MIN_TEMP, Constants.MODE_OFF)
 
         return mode

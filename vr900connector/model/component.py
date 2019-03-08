@@ -1,8 +1,7 @@
 from datetime import datetime
 import abc
 
-from .constants import QUICK_VETO, MODE_AUTO
-from . import TimeProgram, QuickVeto, ActiveMode
+from . import TimeProgram, QuickVeto, ActiveMode, Constants
 
 
 class Component:
@@ -39,11 +38,11 @@ class Component:
         """
 
         if self.quick_veto:
-            return ActiveMode(self.quick_veto.target_temperature, QUICK_VETO)
+            return ActiveMode(self.quick_veto.target_temperature, Constants.QUICK_VETO)
 
-        if self.operation_mode == MODE_AUTO:
+        if self.operation_mode == Constants.MODE_AUTO:
             setting = self.time_program.get_time_program_for(datetime.now())
-            return ActiveMode(setting.target_temperature, MODE_AUTO, setting.mode)
+            return ActiveMode(setting.target_temperature, Constants.MODE_AUTO, setting.mode)
         else:
             return self._get_specific_active_mode()
 

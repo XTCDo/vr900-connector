@@ -1,8 +1,6 @@
 from typing import List
 
-from . import Component, TimeProgram, QuickVeto, Device, ActiveMode
-from .constants import FROST_PROTECTION_TEMP, MODE_OFF, MODE_MANUAL, MODE_AUTO, QUICK_VETO, THERMOSTAT_MAX_TEMP
-
+from . import Component, TimeProgram, QuickVeto, Device, ActiveMode, Constants
 
 class Room(Component):
     """
@@ -14,17 +12,17 @@ class Room(Component):
         devices: List of devices in the room, see :class:`vr900connector.Device`
     """
 
-    MODES = [MODE_OFF, MODE_MANUAL, MODE_AUTO, QUICK_VETO]
+    MODES = [Constants.MODE_OFF, Constants.MODE_MANUAL, Constants.MODE_AUTO, Constants.QUICK_VETO]
     """
     List of available modes for a room
     """
 
-    MIN_TEMP = FROST_PROTECTION_TEMP
+    MIN_TEMP = Constants.FROST_PROTECTION_TEMP
     """
     Minimum temperature in celsius for a room, this is coming from documentation
     """
 
-    MAX_TEMP = THERMOSTAT_MAX_TEMP
+    MAX_TEMP = Constants.THERMOSTAT_MAX_TEMP
     """
     Maximum temperature celsius for a room, this is coming from my tests with android application, cannot go above 30
     """
@@ -39,9 +37,9 @@ class Room(Component):
         self.devices = devices
 
     def _get_specific_active_mode(self) -> ActiveMode:
-        if self.operation_mode == MODE_OFF:
-            mode = ActiveMode(MODE_OFF, self.MIN_TEMP)
+        if self.operation_mode == Constants.MODE_OFF:
+            mode = ActiveMode(Constants.MODE_OFF, self.MIN_TEMP)
         else:  # MODE_MANUAL
-            mode = ActiveMode(MODE_MANUAL, self.target_temperature)
+            mode = ActiveMode(Constants.MODE_MANUAL, self.target_temperature)
 
         return mode

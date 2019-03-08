@@ -1,9 +1,7 @@
 import logging
 
-from .api import ApiConnector, urls, payloads
-from .api.constants import DEFAULT_SMART_PHONE_ID, DEFAULT_FILES_PATH
-from .model import Mapper, System, HotWater
-from .model.constants import QM_HOTWATER_BOOST
+from .api import ApiConnector, urls, payloads, Defaults
+from .model import Mapper, System, HotWater, Constants
 
 LOGGER = logging.getLogger('SystemManager')
 
@@ -22,8 +20,8 @@ class SystemManager:
         file_path: Where to store files created by the underlying connector.
     """
 
-    def __init__(self, user: str, password: str, smart_phone_id: str = DEFAULT_SMART_PHONE_ID,
-                 file_path: str = DEFAULT_FILES_PATH):
+    def __init__(self, user: str, password: str, smart_phone_id: str = Defaults.SMART_PHONE_ID,
+                 file_path: str = Defaults.FILES_PATH):
         self._connector = ApiConnector(user, password, smart_phone_id, file_path)
 
     def get_system(self):
@@ -81,7 +79,7 @@ class SystemManager:
         if new_mode:
             if hot_water.operation_mode != new_mode:
                 if quick_mode:
-                    if new_mode != QM_HOTWATER_BOOST:
+                    if new_mode != Constants.QM_HOTWATER_BOOST:
                         LOGGER.debug("Quick mode %s is running and will get kept, new mode will be set",
                                      quick_mode.name)
                         return self._set_hot_water_operation_mode(hot_water, new_mode)
@@ -90,7 +88,7 @@ class SystemManager:
                                      quick_mode.name)
                         return False
                 else:
-                    if new_mode == QM_HOTWATER_BOOST:
+                    if new_mode == Constants.QM_HOTWATER_BOOST:
                         LOGGER.debug("No quick mode running, "
                                      "new_mode is a quick mode and will be applied for the whole system")
                         return self.set_quick_mode(new_mode)
