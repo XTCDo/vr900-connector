@@ -1,12 +1,13 @@
 from enum import Enum
 
+from model import Zone
 from . import Constants
 
 
 class QuickMode(Enum):
     """
     Quick modes are mode you can quickly set with the app. Most of the times, quick modes have system wise impact.
-    Example: for 'ONE_DAY_AWAY', the quick mode will prevent zones, rooms and water heater from heating.
+    Example: for 'ONE_DAY_AWAY', the quick mode will prevent zones and water heater from heating.
 
     This is different from quick veto, which will only impact one component.
 
@@ -21,7 +22,7 @@ class QuickMode(Enum):
     http://elearning.vaillant.com/vrc700/ci/en/documents/uk/infopool/Operating_instructions.pdf
 
     Args:
-        name: Name of the quick mode, directly coming from the API
+        mode_name: Name of the quick mode, directly coming from the API
         for_zone: does the quick mode apply to a zone ?
         for_room: does the quick mode apply to a room ?
         for_hot_water: does the quick mode apply to the hot_water ?
