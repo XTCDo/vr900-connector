@@ -1,5 +1,6 @@
 import json
 
+
 class Payloads:
     """
     This is meant to be used with :mod: `vr900connector.api.urls` to allow user to easily obtain the payload for a

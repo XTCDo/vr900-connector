@@ -1,6 +1,6 @@
 from .constants import Constants
-from .quickmode import QuickMode
 from .activemode import ActiveMode
+from .quickmode import QuickMode
 from .quickveto import QuickVeto
 from .timeprogram import TimeProgram, TimeProgramDay, TimeProgramDaySetting
 from .component import Component

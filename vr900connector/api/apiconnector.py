@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from . import urls, ApiError, Defaults
+from . import Urls, ApiError, Defaults
 from ..util import FileUtils
 
 _LOGGER = logging.getLogger('Connector')
@@ -50,7 +50,7 @@ class ApiConnector:
         """
         response = None
         try:
-            response = self._session.request('POST', urls.logout())
+            response = self._session.request('POST', Urls.logout())
         except Exception as e:
             raise ApiError("Error during logout", response) from e
         finally:
@@ -172,7 +172,7 @@ class ApiConnector:
         }
 
         try:
-            response = self._session.post(urls.new_token(), json=params, headers=_JSON_CONTENT_TYPE_HEADER)
+            response = self._session.post(Urls.new_token(), json=params, headers=_JSON_CONTENT_TYPE_HEADER)
             if response.status_code == 200:
                 _LOGGER.debug('Token generation successful')
                 return response.json()['body']['authToken']
@@ -192,7 +192,7 @@ class ApiConnector:
         }
 
         try:
-            response = self._session.post(urls.authenticate(), json=params, headers=_JSON_CONTENT_TYPE_HEADER)
+            response = self._session.post(Urls.authenticate(), json=params, headers=_JSON_CONTENT_TYPE_HEADER)
 
             if response.status_code == 200:
                 _LOGGER.debug('Cookie successfully retrieved %s', self._session.cookies)
@@ -206,7 +206,7 @@ class ApiConnector:
 
     def _get_serial_number(self):
         try:
-            response = self._session.get(urls.facilities_list())
+            response = self._session.get(Urls.facilities_list())
 
             if response.status_code == 200:
                 _LOGGER.debug('Serial number successfully retrieved')

@@ -4,7 +4,7 @@ import unittest
 import responses
 
 from tests.testutil import TestUtil
-from vr900connector.api import urls
+from vr900connector.api import Urls
 from vr900connector.model import HotWater, Constants, QuickMode
 from vr900connector.systemmanager import SystemManager
 
@@ -163,8 +163,12 @@ class SystemManagerTest(unittest.TestCase):
         self.assertEqual(20.0, active_mode.target_temperature)
 
     def _mock_urls(self, hvacstate_data, livereport_data, rooms_data, serial, system_data):
-        responses.add(responses.GET, urls.live_report().format(serial_number=serial), json=livereport_data,
+        responses.add(responses.GET, Urls.live_report().format(serial_number=serial), json=livereport_data,
                       status=200)
-        responses.add(responses.GET, urls.rooms().format(serial_number=serial), json=rooms_data, status=200)
-        responses.add(responses.GET, urls.system().format(serial_number=serial), json=system_data, status=200)
-        responses.add(responses.GET, urls.hvac().format(serial_number=serial), json=hvacstate_data, status=200)
+        responses.add(responses.GET, Urls.rooms().format(serial_number=serial), json=rooms_data, status=200)
+        responses.add(responses.GET, Urls.system().format(serial_number=serial), json=system_data, status=200)
+        responses.add(responses.GET, Urls.hvac().format(serial_number=serial), json=hvacstate_data, status=200)
+
+
+if __name__ == '__main__':
+    unittest.main()

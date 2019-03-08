@@ -1,145 +1,37 @@
 import unittest
-import datetime
 
-from vr900connector.model import TimeProgramDaySetting, TimeProgramDay, TimeProgram, Zone, System, QuickVeto, \
-    Constants, HolidayMode, QuickMode
+from vr900connector.model import Zone, Constants
 
 
 class ZoneTest(unittest.TestCase):
 
-    def test_get_active_mode_zone(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': timeprogram_day,
-        }
-        timeprogram = TimeProgram(timeprogram_days)
+    def test_get_active_mode_night(self):
+        zone = Zone('id', 'Test', None, 10.0, 7.0, Constants.MODE_NIGHT, None, 6.0, 'Heating', False)
 
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, None, 18, 'STANDBY', False)
-        system = System(None, None, [zone], None, None, None, 5, None)
+        active_mode = zone.active_mode
 
-        active_mode = system.get_active_mode_zone(zone)
+        self.assertEqual(Constants.MODE_NIGHT, active_mode.current_mode)
+        self.assertEqual(6.0, active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
 
-        self.assertEqual(active_mode.current_mode, Constants.MODE_AUTO)
-        self.assertEqual(active_mode.sub_mode, timeprogram_day_setting.mode)
-        self.assertEqual(active_mode.target_temperature, timeprogram_day_setting.target_temperature)
+    def test_get_active_mode_day(self):
+        zone = Zone('id', 'Test', None, 10.0, 7.0, Constants.MODE_DAY, None, 6.0, 'Heating', False)
 
-    def test_get_active_mode_zone_quick_veto(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': timeprogram_day,
-        }
-        timeprogram = TimeProgram(timeprogram_days)
-        quickveto = QuickVeto(0, 55)
+        active_mode = zone.active_mode
 
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, quickveto, 18, 'STANDBY', False)
-        system = System(None, None, [zone], None, None, None, 5, None)
+        self.assertEqual(Constants.MODE_DAY, active_mode.current_mode)
+        self.assertEqual(7.0, active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
 
-        active_mode = system.get_active_mode_zone(zone)
+    def test_get_active_mode_off(self):
+        zone = Zone('id', 'Test', None, 10.0, 7.0, Constants.MODE_OFF, None, 6.0, 'Heating', False)
 
-        self.assertEqual(active_mode.current_mode, Constants.QUICK_VETO)
-        self.assertEqual(active_mode.target_temperature, quickveto.target_temperature)
+        active_mode = zone.active_mode
 
-    def test_get_active_mode_zone_holiday_mode(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': timeprogram_day,
-        }
-        timeprogram = TimeProgram(timeprogram_days)
-        holiday_mode = HolidayMode(True, datetime.date.today(), datetime.date.today(), 10)
+        self.assertEqual(Constants.MODE_OFF, active_mode.current_mode)
+        self.assertEqual(Zone.MIN_TEMP, active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
 
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, None, 18, 'STANDBY', False)
-        system = System(holiday_mode, None, [zone], None, None, None, 5, None)
 
-        active_mode = system.get_active_mode_zone(zone)
-
-        self.assertEqual(active_mode.current_mode, Constants.HOLIDAY_MODE)
-        self.assertEqual(active_mode.target_temperature, holiday_mode.target_temperature)
-
-    def test_get_active_mode_zone_quick_mode_water_boost(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': timeprogram_day,
-        }
-        timeprogram = TimeProgram(timeprogram_days)
-
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, None, 18, 'STANDBY', False)
-        system = System(None, None, [zone], None, None, None, 5, QuickMode.QM_HOTWATER_BOOST)
-
-        active_mode = system.get_active_mode_zone(zone)
-
-        self.assertEqual(active_mode.current_mode, Constants.MODE_AUTO)
-        self.assertEqual(active_mode.sub_mode, timeprogram_day_setting.mode)
-        self.assertEqual(active_mode.target_temperature, timeprogram_day_setting.target_temperature)
-
-    def test_get_active_mode_zone_quick_mode_system_off(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': timeprogram_day,
-        }
-        timeprogram = TimeProgram(timeprogram_days)
-
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, None, 18, 'STANDBY', False)
-        system = System(None, None, [zone], None, None, None, 5, QuickMode.QM_SYSTEM_OFF)
-
-        active_mode = system.get_active_mode_zone(zone)
-
-        self.assertEqual(active_mode.current_mode, QuickMode.QM_SYSTEM_OFF.name)
-        self.assertEqual(active_mode.target_temperature, Zone.MIN_TEMP)
-
-    def test_get_active_mode_zone_quick_mode_one_day_home(self):
-        timeprogram_day_setting = TimeProgramDaySetting('00:00', 20, Constants.MODE_DAY)
-        timeprogram_day_setting_sunday = TimeProgramDaySetting('00:00', 25, Constants.MODE_DAY)
-        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
-        timeprogram_days = {
-            'monday': timeprogram_day,
-            'tuesday': timeprogram_day,
-            'wednesday': timeprogram_day,
-            'thursday': timeprogram_day,
-            'friday': timeprogram_day,
-            'saturday': timeprogram_day,
-            'sunday': TimeProgramDay([timeprogram_day_setting_sunday]),
-        }
-        timeprogram = TimeProgram(timeprogram_days)
-
-        zone = Zone('1', 'Test', timeprogram, 20, 20, Constants.MODE_AUTO, None, 18, 'STANDBY', False)
-        system = System(None, None, [zone], None, None, None, 5, QuickMode.QM_ONE_DAY_AT_HOME)
-
-        active_mode = system.get_active_mode_zone(zone)
-
-        self.assertEqual(active_mode.current_mode, QuickMode.QM_ONE_DAY_AT_HOME.name)
-        self.assertEqual(active_mode.target_temperature, timeprogram_day_setting_sunday.target_temperature)
+if __name__ == '__main__':
+    unittest.main()

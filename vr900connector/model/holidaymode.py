@@ -1,5 +1,7 @@
 from datetime import date
 
+from vr900connector.model import ActiveMode, Constants
+
 
 class HolidayMode:
     """
@@ -18,5 +20,7 @@ class HolidayMode:
         self.end_date = end_date
         self.target_temperature = target_temperature
 
-
-
+    @property
+    def active_mode(self) -> ActiveMode:
+        if self.active:
+            return ActiveMode(self.target_temperature, Constants.HOLIDAY_MODE)

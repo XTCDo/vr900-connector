@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import responses
 
 from tests.testutil import TestUtil
-from vr900connector.api import urls, ApiError, ApiConnector
+from vr900connector.api import Urls, ApiError, ApiConnector
 
 
 class ApiConnectorTest(unittest.TestCase):
@@ -27,27 +27,27 @@ class ApiConnectorTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/token'), 'r') as file:
             token_data = json.loads(file.read())
 
-        responses.add(responses.POST, urls.new_token(), json=token_data, status=200)
-        responses.add(responses.POST, urls.authenticate(), status=200)
-        responses.add(responses.GET, urls.facilities_list(), json=facilities_data, status=200)
+        responses.add(responses.POST, Urls.new_token(), json=token_data, status=200)
+        responses.add(responses.POST, Urls.authenticate(), status=200)
+        responses.add(responses.GET, Urls.facilities_list(), json=facilities_data, status=200)
 
-        data = self.connector.get(urls.facilities_list())
+        data = self.connector.get(Urls.facilities_list())
         self.assertEqual(facilities_data, data)
         self.assertEqual(4, len(responses.calls))
-        self.assertEqual(urls.new_token(), responses.calls[0].request.url)
-        self.assertEqual(urls.authenticate(), responses.calls[1].request.url)
-        self.assertEqual(urls.facilities_list(), responses.calls[2].request.url)
-        self.assertEqual(urls.facilities_list(), responses.calls[3].request.url)
+        self.assertEqual(Urls.new_token(), responses.calls[0].request.url)
+        self.assertEqual(Urls.authenticate(), responses.calls[1].request.url)
+        self.assertEqual(Urls.facilities_list(), responses.calls[2].request.url)
+        self.assertEqual(Urls.facilities_list(), responses.calls[3].request.url)
 
     @responses.activate
     def test_re_login(self):
         serial_number = TestUtil.mock_full_auth_success()
 
-        repeaters_url = urls.repeaters().format(serial_number=serial_number)
+        repeaters_url = Urls.repeaters().format(serial_number=serial_number)
         responses.add(responses.GET, repeaters_url, status=401)
 
         try:
-            self.connector.get(urls.repeaters())
+            self.connector.get(Urls.repeaters())
             self.fail('Error expected')
         except ApiError as e:
             self.assertEqual(8, len(responses.calls))
@@ -60,10 +60,10 @@ class ApiConnectorTest(unittest.TestCase):
     def test_cookie_failed(self):
         TestUtil.mock_token_success()
 
-        responses.add(responses.POST, urls.authenticate(), status=401)
+        responses.add(responses.POST, Urls.authenticate(), status=401)
 
         try:
-            self.connector.get(urls.facilities_list())
+            self.connector.get(Urls.facilities_list())
             self.fail("Error expected")
         except ApiError as e:
             self.assertEqual("Cannot get cookies", e.message)
@@ -73,7 +73,7 @@ class ApiConnectorTest(unittest.TestCase):
         TestUtil.mock_token_success()
 
         try:
-            self.connector.get(urls.facilities_list())
+            self.connector.get(Urls.facilities_list())
             self.fail("Error expected")
         except ApiError as e:
             self.assertEqual("Error while getting cookies", e.message)
@@ -84,10 +84,10 @@ class ApiConnectorTest(unittest.TestCase):
         with open(TestUtil.path('files/responses/wrong_token'), 'r') as file:
             token_data = json.loads(file.read())
 
-        responses.add(responses.POST, urls.new_token(), json=token_data, status=401)
+        responses.add(responses.POST, Urls.new_token(), json=token_data, status=401)
 
         try:
-            self.connector.get(urls.facilities_list())
+            self.connector.get(Urls.facilities_list())
             self.fail("Error expected")
         except ApiError as e:
             self.assertEqual("Authentication failed", e.message)
@@ -96,8 +96,8 @@ class ApiConnectorTest(unittest.TestCase):
     def test_put(self):
         serial = TestUtil.mock_full_auth_success()
 
-        responses.add(responses.PUT, urls.rooms().format(serial_number=serial), json='', status=200)
-        self.connector.put(urls.rooms())
+        responses.add(responses.PUT, Urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.put(Urls.rooms())
 
         self.assertEqual(4, len(responses.calls))
         self.assertEqual('PUT', responses.calls[3].request.method)
@@ -106,8 +106,8 @@ class ApiConnectorTest(unittest.TestCase):
     def test_post(self):
         serial = TestUtil.mock_full_auth_success()
 
-        responses.add(responses.POST, urls.rooms().format(serial_number=serial), json='', status=200)
-        self.connector.post(urls.rooms())
+        responses.add(responses.POST, Urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.post(Urls.rooms())
 
         self.assertEqual(4, len(responses.calls))
         self.assertEqual('POST', responses.calls[3].request.method)
@@ -116,8 +116,8 @@ class ApiConnectorTest(unittest.TestCase):
     def test_delete(self):
         serial = TestUtil.mock_full_auth_success()
 
-        responses.add(responses.DELETE, urls.rooms().format(serial_number=serial), json='', status=200)
-        self.connector.delete(urls.rooms())
+        responses.add(responses.DELETE, Urls.rooms().format(serial_number=serial), json='', status=200)
+        self.connector.delete(Urls.rooms())
 
         self.assertEqual(4, len(responses.calls))
         self.assertEqual('DELETE', responses.calls[3].request.method)
@@ -139,7 +139,7 @@ class ApiConnectorTest(unittest.TestCase):
         TestUtil.mock_authentication_success()
         TestUtil.mock_token_success()
 
-        responses.add(responses.GET, urls.facilities_list(), json='', status=400)
+        responses.add(responses.GET, Urls.facilities_list(), json='', status=400)
 
         try:
             self.connector.get('')
@@ -165,9 +165,9 @@ class ApiConnectorTest(unittest.TestCase):
     def test_call_empty_response_success(self):
         serial = TestUtil.mock_full_auth_success()
 
-        responses.add(responses.GET, urls.rooms().format(serial_number=serial), status=200)
+        responses.add(responses.GET, Urls.rooms().format(serial_number=serial), status=200)
 
-        result = self.connector.get(urls.rooms())
+        result = self.connector.get(Urls.rooms())
         self.assertEqual({"ok": "ok"}, result)
 
     @responses.activate
@@ -175,10 +175,10 @@ class ApiConnectorTest(unittest.TestCase):
         serial = TestUtil.mock_full_auth_success()
 
         try:
-            self.connector.get(urls.rooms())
+            self.connector.get(Urls.rooms())
             self.fail("Error expected")
         except ApiError as e:
-            self.assertEqual("Cannot GET url: " + urls.rooms().format(serial_number=serial), e.message)
+            self.assertEqual("Cannot GET url: " + Urls.rooms().format(serial_number=serial), e.message)
 
     @responses.activate
     def test_request_token_error(self):
@@ -211,14 +211,12 @@ class ApiConnectorTest(unittest.TestCase):
             self.assertIsNone(e.response)
             self.assertEqual('Error during login', e.message)
 
-
-
     # @responses.activate
     # def test_login_once(self):
     #     TestUtil.mock_auth_success()
     #
-    #     self.connector.get(urls.facilities_list())
-    #     self.connector.get(urls.facilities_list())
+    #     self.connector.get(Urls.facilities_list())
+    #     self.connector.get(Urls.facilities_list())
     #     self.assertEqual(len(responses.calls), 5)
 
 

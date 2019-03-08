@@ -45,3 +45,7 @@ class FileUtilsTest(unittest.TestCase):
 
         with open(path + '/' + file, 'rb') as f:
             self.assertEqual(data, pickle.load(f))
+
+
+if __name__ == '__main__':
+    unittest.main()

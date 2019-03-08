@@ -20,3 +20,7 @@ class QuickModeTest(unittest.TestCase):
     def test_for_circulation(self):
         values = QuickMode.for_circulation()
         self.assertEqual(3, len(values))
+
+
+if __name__ == '__main__':
+    unittest.main()

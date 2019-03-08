@@ -13,7 +13,10 @@ class Component:
         name: name of the component (this is the name you defined in the application or on VRC700)
         time_program: The timeprogram you defined, see :class:`vr900connector.model.TimeProgram`
         current_temperature: The current temperature of the component
-        target_temperature: The target temperature of the component
+        target_temperature: The target tempe
+
+if __name__ == '__main__':
+    unittest.main()rature of the component
         operation_mode: Configured operation mode for the component. It can be completely different from the
         :class:`vr900connector.model.ActiveMode`. To get the real running mode, consider using
         :func:`vr900connector.model.System.get_active_mode_zone()`
@@ -30,7 +33,8 @@ class Component:
         self.operation_mode = operation_mode
         self.quick_veto = quick_veto
 
-    def get_active_mode(self) -> ActiveMode:
+    @property
+    def active_mode(self) -> ActiveMode:
         """
         Get the active mode for a component. Please note that a component is not aware of quick mode or holiday mode
 

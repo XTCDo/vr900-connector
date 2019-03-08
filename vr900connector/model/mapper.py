@@ -54,8 +54,8 @@ class Mapper:
 
             time_program = Mapper.time_program(raw_room.get("timeprogram"))
 
-            return Room(component_id, name, time_program, current_temp, target_temp, operation_mode, quick_veto, child_lock,
-                        window_open, devices)
+            return Room(component_id, name, time_program, current_temp, target_temp, operation_mode, quick_veto,
+                        child_lock, window_open, devices)
 
     @staticmethod
     def devices(raw_devices):
@@ -207,24 +207,24 @@ class Mapper:
 
         return None
 
-    @staticmethod
-    def _find_water_pressure_report(live_report):
-        for device in live_report.get("body", dict()).get("devices", list()):
-            for report in device.get("reports", list()):
-                if report.get("associated_device_function") == "HEATING" and report.get("_id") == "WaterPressureSensor":
-                    return report
-
-        return None
-
-    @staticmethod
-    def _find_boiler_temperature_report(live_report):
-        for device in live_report.get("body", dict()).get("devices", list()):
-            for report in device.get("reports", list()):
-                if report.get("associated_device_function") == "HEATING" \
-                        and report.get("_id") == "FlowTemperatureSensor":
-                    return report
-
-        return None
+    # @staticmethod
+    # def _find_water_pressure_report(live_report):
+    #     for device in live_report.get("body", dict()).get("devices", list()):
+    #         for report in device.get("reports", list()):
+    #           if report.get("associated_device_function") == "HEATING" and report.get("_id") == "WaterPressureSensor":
+    #                 return report
+    #
+    #     return None
+    #
+    # @staticmethod
+    # def _find_boiler_temperature_report(live_report):
+    #     for device in live_report.get("body", dict()).get("devices", list()):
+    #         for report in device.get("reports", list()):
+    #             if report.get("associated_device_function") == "HEATING" \
+    #                     and report.get("_id") == "FlowTemperatureSensor":
+    #                 return report
+    #
+    #     return None
 
     @staticmethod
     def _find_dhw_temperature_report(live_report):
@@ -235,25 +235,3 @@ class Mapper:
                     return report
 
         return None
-
-    @staticmethod
-    def _find_zone_quick_veto_timestamp(zone_id, meta):
-        for state in meta.get("resourceState", list()):
-            if state.get("link", dict()).get("resourceLink", "") \
-                    .find("/zones/" + zone_id + "/configuration/quick_veto"):
-                return state.get("timestamp")
-        return None
-
-    @staticmethod
-    def _find_dhw_quick_veto_timestamp(meta):
-        for state in meta.get("resourceState", list()):
-            if state.get("link", dict()).get("resourceLink", "") \
-                    .find("/systemcontrol/v1/configuration/quickmode"):
-                return state.get("timestamp")
-        return None
-
-    @staticmethod
-    def _get_delta(start_time, time_to_add):
-        end_time = start_time + time_to_add
-        delta = (end_time / 1000) - datetime.datetime.now().timestamp()
-        return int(delta / 60)

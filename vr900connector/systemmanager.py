@@ -1,6 +1,6 @@
 import logging
 
-from .api import ApiConnector, urls, payloads, Defaults
+from .api import ApiConnector, Urls, Payloads, Defaults
 from .model import Mapper, System, HotWater, Constants
 
 LOGGER = logging.getLogger('SystemManager')
@@ -25,9 +25,9 @@ class SystemManager:
         self._connector = ApiConnector(user, password, smart_phone_id, file_path)
 
     def get_system(self):
-        full_system = self._connector.get(urls.system())
-        live_report = self._connector.get(urls.live_report())
-        hvac_state = self._connector.get(urls.hvac())
+        full_system = self._connector.get(Urls.system())
+        live_report = self._connector.get(Urls.live_report())
+        hvac_state = self._connector.get(Urls.hvac())
 
         holiday_mode = Mapper.holiday_mode(full_system)
         boiler_status = Mapper.boiler_status(hvac_state)
@@ -37,7 +37,7 @@ class SystemManager:
         rooms = None
         for zone in zones:
             if zone.rbr:
-                raw_rooms = self._connector.get(urls.rooms())
+                raw_rooms = self._connector.get(Urls.rooms())
                 rooms = Mapper.rooms(raw_rooms)
                 break
 
@@ -50,15 +50,15 @@ class SystemManager:
         return System(holiday_mode, boiler_status, zones, rooms, hot_water, circulation, outdoorTemperature, quickMode)
 
     def get_hot_water(self):
-        full_system = self._connector.get(urls.system())
-        live_report = self._connector.get(urls.live_report())
+        full_system = self._connector.get(Urls.system())
+        live_report = self._connector.get(Urls.live_report())
         return Mapper.domestic_hot_water(full_system, live_report)
 
     def set_hot_water_setpoint_temperature(self, hot_water: HotWater, temperature: float):
         LOGGER.info("Will try to set dhw target temperature to %s", temperature)
         if temperature:
-            self._connector.put(urls.set_hot_water_temperature_setpoint(hot_water.id),
-                                payloads.set_temperature_setpoint(round(float(temperature))))
+            self._connector.put(Urls.set_hot_water_temperature_setpoint(hot_water.id),
+                                Payloads.set_temperature_setpoint(round(float(temperature))))
             return True
         else:
             LOGGER.debug("No temperature provided, nothing to do")
@@ -108,7 +108,7 @@ class SystemManager:
         Set quick mode system wise
         :return: True if everything is ok
         """
-        self._connector.put(urls.system_quickmode(), payloads.quickmode(quick_mode))
+        self._connector.put(Urls.system_quickmode(), Payloads.quickmode(quick_mode))
         return True
 
     def logout(self):
@@ -118,6 +118,6 @@ class SystemManager:
         self._connector.logout()
 
     def _set_hot_water_operation_mode(self, hot_water: HotWater, new_mode: str):
-        self._connector.put(urls.set_hot_water_operation_mode(hot_water.id),
-                            payloads.set_operation_mode(new_mode))
+        self._connector.put(Urls.set_hot_water_operation_mode(hot_water.id),
+                            Payloads.set_operation_mode(new_mode))
         return True

@@ -1,13 +1,15 @@
 import unittest
-from inspect import getmembers, isfunction, signature
+import inspect
 
-from vr900connector.api import urls
+from vr900connector.api import Urls
 
 
 class TestUrls(unittest.TestCase):
 
     def test_all_urls(self):
-        functions_list = [o for o in getmembers(urls) if isfunction(o[1])]
+        functions_list = inspect.getmembers(Urls, predicate=inspect.ismethod)
+
+        self.assertTrue(len(functions_list) > 0)
 
         for function in functions_list:
             args_name = self._get_args_name(function[1])
@@ -26,9 +28,13 @@ class TestUrls(unittest.TestCase):
 
     def _get_args_name(self, function):
         names = []
-        for item in signature(function).parameters.items():
+        for item in inspect.signature(function).parameters.items():
             names.append(item[0])
         return names
 
     def _assert_function_call(self, url):
         self.assertNotIn('{', url.replace('{serial_number}', ''))
+
+
+if __name__ == '__main__':
+    unittest.main()

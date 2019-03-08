@@ -25,7 +25,7 @@ class TimeProgramDaySetting:
             hour = int(split[0]) * 60
             minute = int(split[1])
             return hour + minute
-        return 0
+        raise ValueError(start_time)
 
 
 class TimeProgramDay:

@@ -59,7 +59,7 @@ class System:
     def get_active_mode_zone(self, zone: Zone) -> ActiveMode:
         # Holiday mode takes precedence over everything
         if self.holiday_mode.active:
-            return ActiveMode(self.holiday_mode.target_temperature, Constants.HOLIDAY_MODE)
+            return self.holiday_mode.active_mode
 
         # Global system quick mode takes over zone settings
         if self.quick_mode and self.quick_mode.for_zone:
@@ -82,12 +82,12 @@ class System:
             if self.quick_mode == QuickMode.QM_PARTY:
                 return ActiveMode(zone.target_temperature, self.quick_mode.name)
 
-        return zone.get_active_mode()
+        return zone.active_mode
 
     def get_active_mode_room(self, room: Room) -> ActiveMode:
         # Holiday mode takes precedence over everything
         if self.holiday_mode.active:
-            return ActiveMode(self.holiday_mode.target_temperature, Constants.HOLIDAY_MODE)
+            return self.holiday_mode.active_mode
 
         # Global system quick mode takes over room settings
         if self.quick_mode and self.quick_mode.for_room:
@@ -101,14 +101,14 @@ class System:
             if self.quick_mode == QuickMode.QM_SYSTEM_OFF:
                 return ActiveMode(Room.MIN_TEMP, self.quick_mode.name)
 
-        return room.get_active_mode()
+        return room.active_mode
 
     def get_active_mode_circulation(self, circulation: Circulation = None) -> ActiveMode:
         if not circulation:
             circulation = self.circulation
 
         if self.holiday_mode.active:
-            return ActiveMode(None, Constants.HOLIDAY_MODE)
+            return self.holiday_mode.active_mode
 
         if self.quick_mode and self.quick_mode.for_circulation:
             if self.quick_mode == QuickMode.QM_SYSTEM_OFF:
@@ -117,14 +117,16 @@ class System:
             if self.quick_mode == QuickMode.QM_HOTWATER_BOOST:
                 return ActiveMode(None, self.quick_mode.name)
 
-        return circulation.get_active_mode()
+        return circulation.active_mode
 
     def get_active_mode_hot_water(self, hot_water: HotWater = None) -> ActiveMode:
         if not hot_water:
             hot_water = self.hot_water
 
         if self.holiday_mode.active:
-            return ActiveMode(HotWater.MIN_TEMP, Constants.HOLIDAY_MODE)
+            active_mode = self.holiday_mode.active_mode
+            active_mode.target_temperature = HotWater.MIN_TEMP
+            return active_mode
 
         if self.quick_mode and self.quick_mode.for_hot_water:
             if self.quick_mode == QuickMode.QM_HOTWATER_BOOST:
@@ -133,4 +135,4 @@ class System:
             if self.quick_mode == QuickMode.QM_SYSTEM_OFF:
                 return ActiveMode(HotWater.MIN_TEMP, self.quick_mode.name)
 
-        return hot_water.get_active_mode()
+        return hot_water.active_mode

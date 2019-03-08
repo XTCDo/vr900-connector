@@ -177,6 +177,16 @@ class ModelMapperTest(unittest.TestCase):
         self.assertEqual(Constants.MODE_AUTO, hot_water.operation_mode)
         self.assertEqual("Control_DHW", hot_water.id)
 
+    def test_hot_water_no_current_temp(self):
+        with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
+            raw_system = json.loads(file.read())
+
+        hot_water = Mapper.domestic_hot_water(raw_system, json.loads('{}'))
+        self.assertEqual(None, hot_water.current_temperature)
+        self.assertEqual(51, hot_water.target_temperature)
+        self.assertEqual(Constants.MODE_AUTO, hot_water.operation_mode)
+        self.assertEqual("Control_DHW", hot_water.id)
+
     def test_boiler_status(self):
         with open(TestUtil.path('files/responses/hvacstate'), 'r') as file:
             hvac = json.loads(file.read())

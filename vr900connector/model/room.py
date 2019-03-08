@@ -38,8 +38,8 @@ class Room(Component):
 
     def _get_specific_active_mode(self) -> ActiveMode:
         if self.operation_mode == Constants.MODE_OFF:
-            mode = ActiveMode(Constants.MODE_OFF, self.MIN_TEMP)
+            mode = ActiveMode(self.MIN_TEMP, Constants.MODE_OFF)
         else:  # MODE_MANUAL
-            mode = ActiveMode(Constants.MODE_MANUAL, self.target_temperature)
+            mode = ActiveMode(self.target_temperature, Constants.MODE_MANUAL)
 
         return mode

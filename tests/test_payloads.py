@@ -4,7 +4,7 @@ import inspect
 from vr900connector.api.payloads import Payloads
 
 
-class TestPayloads(unittest.TestCase):
+class PayloadsTest(unittest.TestCase):
 
     def test_all_payload(self):
         functions_list = inspect.getmembers(Payloads, predicate=inspect.ismethod)
@@ -34,3 +34,7 @@ class TestPayloads(unittest.TestCase):
 
     def _assert_function_call(self, result):
         json.loads(result)
+
+
+if __name__ == '__main__':
+    unittest.main()

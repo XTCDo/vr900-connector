@@ -42,7 +42,14 @@ class TimeProgramTest(unittest.TestCase):
         current = timeprogram.get_time_program_for(datetime(2019, 2, 18, 0, 30))
         self._assert(tpds_sunday, current)
 
+    def test_wrong_start_time(self):
+        self.assertRaises(ValueError, TimeProgramDaySetting, 'xx', 25, 'Test1')
+
     def _assert(self, expected, actual):
         self.assertEqual(expected.target_temperature, actual.target_temperature)
         self.assertEqual(expected.mode, actual.mode)
         self.assertEqual(expected.start_time, actual.start_time)
+
+
+if __name__ == '__main__':
+    unittest.main()
