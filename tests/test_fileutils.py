@@ -1,5 +1,7 @@
+import os
 import pickle
 import unittest
+from unittest.mock import Mock, patch
 
 from tests.testutil import TestUtil
 from vr900connector.util import FileUtils
@@ -45,6 +47,31 @@ class FileUtilsTest(unittest.TestCase):
 
         with open(path + '/' + file, 'rb') as f:
             self.assertEqual(data, pickle.load(f))
+
+    @patch.object(pickle, 'dump')
+    def test_save_to_file_no_error_on_exception(self, mock_dump):
+        path = TestUtil.temp_path()
+        file = 'test_save_to_file.txt'
+        data = bytes('test data', 'utf-8')
+
+        mock_dump.side_effect = Exception('Test exception')
+
+        FileUtils.save_to_file(data, path, file)
+
+        self.assertEqual(0, os.stat(os.path.join(path, file)).st_size)
+
+    def test_delete_dir(self):
+        path = TestUtil.temp_path()
+        self.assertTrue(os.path.exists(path))
+        FileUtils.delete_dir(path)
+        self.assertFalse(os.path.exists(path))
+
+    def test_delete_dir_exception(self):
+        path = TestUtil.temp_path()
+        self.assertTrue(os.path.exists(path))
+        os.rmdir = Mock(side_effect=Exception('Test exception'))
+        FileUtils.delete_dir(path)
+        self.assertTrue(os.path.exists(path))
 
 
 if __name__ == '__main__':

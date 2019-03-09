@@ -9,36 +9,36 @@ from vr900connector.api import Urls
 
 class TestUtil:
 
-    @staticmethod
-    def path(file):
+    @classmethod
+    def path(cls, file):
         return os.path.join(os.path.dirname(__file__), file)
 
-    @staticmethod
-    def temp_path():
+    @classmethod
+    def temp_path(cls, ):
         path = os.path.join(tempfile.gettempdir(), str(uuid.uuid4()))
         os.mkdir(path)
         return path
 
-    @staticmethod
-    def mock_full_auth_success():
+    @classmethod
+    def mock_full_auth_success(cls, ):
         TestUtil.mock_authentication_success()
         TestUtil.mock_token_success()
         return TestUtil.mock_serial_success()
 
-    @staticmethod
-    def mock_token_success():
+    @classmethod
+    def mock_token_success(cls, ):
         with open(TestUtil.path('files/responses/token'), 'r') as file:
             token_data = json.loads(file.read())
 
         responses.add(responses.POST, Urls.new_token(), json=token_data, status=200)
 
-    @staticmethod
-    def mock_authentication_success():
+    @classmethod
+    def mock_authentication_success(cls, ):
         responses.add(responses.POST, Urls.authenticate(), status=200,
                       headers={"Set-Cookie": "test=value; path=/; HttpOnly; Secure"})
 
-    @staticmethod
-    def mock_serial_success():
+    @classmethod
+    def mock_serial_success(cls):
         with open(TestUtil.path('files/responses/facilities'), 'r') as file:
             facilities_data = json.loads(file.read())
 

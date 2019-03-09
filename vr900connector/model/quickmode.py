@@ -79,8 +79,8 @@ class QuickMode(Enum):
     The heating installation will then return to the pre-set mode.
     """
 
-    @staticmethod
-    def from_name(name):
+    @classmethod
+    def from_name(cls, name):
         """
 
         :param name: Name of the quick mode
@@ -89,8 +89,8 @@ class QuickMode(Enum):
 
         return QuickMode[name]
 
-    @staticmethod
-    def for_zone() -> list:
+    @classmethod
+    def for_zone(cls) -> list:
         sub_list = []
 
         for quickMode in QuickMode:
@@ -99,8 +99,8 @@ class QuickMode(Enum):
 
         return sub_list
 
-    @staticmethod
-    def for_room() -> []:
+    @classmethod
+    def for_room(cls) -> []:
         sub_list = []
 
         for quickMode in QuickMode:
@@ -109,8 +109,8 @@ class QuickMode(Enum):
 
         return sub_list
 
-    @staticmethod
-    def for_hot_water() -> []:
+    @classmethod
+    def for_hot_water(cls) -> []:
         sub_list = []
 
         for quickMode in QuickMode:
@@ -119,8 +119,8 @@ class QuickMode(Enum):
 
         return sub_list
 
-    @staticmethod
-    def for_circulation() -> []:
+    @classmethod
+    def for_circulation(cls) -> []:
         sub_list = []
 
         for quickMode in QuickMode:
