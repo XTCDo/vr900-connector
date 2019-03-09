@@ -5,7 +5,6 @@ import responses
 
 from tests.testutil import TestUtil
 from vr900connector.api import Urls
-from vr900connector.model import HotWater, Constants, QuickMode
 from vr900connector.systemmanager import SystemManager
 
 

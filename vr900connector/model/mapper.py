@@ -216,16 +216,12 @@ class Mapper:
             if message.get("type") == "STATUS":
                 return message
 
-        return None
-
     # @classmethod
     # def _find_water_pressure_report(cls, live_report):
     #     for device in live_report.get("body", dict()).get("devices", list()):
     #         for report in device.get("reports", list()):
     #           if report.get("associated_device_function") == "HEATING" and report.get("_id") == "WaterPressureSensor":
     #                 return report
-    #
-    #     return None
     #
     # @classmethod
     # def _find_boiler_temperature_report(cls, live_report):
@@ -234,8 +230,6 @@ class Mapper:
     #             if report.get("associated_device_function") == "HEATING" \
     #                     and report.get("_id") == "FlowTemperatureSensor":
     #                 return report
-    #
-    #     return None
 
     @classmethod
     def _find_dhw_temperature_report(cls, live_report):
@@ -244,5 +238,3 @@ class Mapper:
                 if report.get("associated_device_function") == "DHW" \
                         and report.get("_id") == "DomesticHotWaterTankTemperature":
                     return report
-
-        return None

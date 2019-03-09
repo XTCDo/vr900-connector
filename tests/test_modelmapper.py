@@ -15,12 +15,26 @@ class ModelMapperTest(unittest.TestCase):
         quick_mode = Mapper.quick_mode(system)
         self.assertEqual(Constants.QM_HOTWATER_BOOST, quick_mode.name)
 
-    def test_map_quick_mode_zone_quick_veto(self):
+    def test_map_quick_mode_no_quick_veto(self):
         with open(TestUtil.path("files/responses/systemcontrol_quick_veto"), 'r') as file:
             system = json.loads(file.read())
 
         quick_mode = Mapper.quick_mode(system)
         self.assertIsNone(quick_mode)
+
+    def test_map_quick_veto_zone(self):
+        with open(TestUtil.path("files/responses/systemcontrol_quick_veto"), 'r') as file:
+            system = json.loads(file.read())
+
+        zones = Mapper.zones(system)
+
+        for zone in zones:
+            if zone.id == "Control_ZO2":
+                self.assertIsNotNone(zone.quick_veto)
+                self.assertIsNotNone(18.5, zone.quick_veto.target_temperature)
+                self.assertIsNotNone(-1, zone.quick_veto.remaining_time)
+                return
+        self.fail("No correct zone found")
 
     def test_map_no_quick_mode(self):
         with open(TestUtil.path('files/responses/systemcontrol'), 'r') as file:
