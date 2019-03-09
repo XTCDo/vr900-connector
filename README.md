@@ -216,5 +216,4 @@ The main object to manipulate is
 
 ## Todos
 * Proper way to deploy to pypi and create tag
-* Add coverage perc (coverall.io, codecov ?)
 * Add updates method (alter system config)

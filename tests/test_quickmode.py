@@ -11,7 +11,7 @@ class QuickModeTest(unittest.TestCase):
 
     def test_for_room(self):
         values = QuickMode.for_room()
-        self.assertEqual(2, len(values))
+        self.assertEqual(1, len(values))
 
     def test_for_hot_water(self):
         values = QuickMode.for_hot_water()

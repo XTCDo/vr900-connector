@@ -91,13 +91,6 @@ class System:
 
         # Global system quick mode takes over room settings
         if self.quick_mode and self.quick_mode.for_room:
-            if self.quick_mode == QuickMode.QM_VENTILATION_BOOST:
-                return ActiveMode(Room.MIN_TEMP, self.quick_mode.name)
-
-            # if self.quick_mode == ONE_DAY_AWAY:
-                # Regarding the documentation, the quick mode should override time program, but it doesn't,
-                # I personally tested it
-
             if self.quick_mode == QuickMode.QM_SYSTEM_OFF:
                 return ActiveMode(Room.MIN_TEMP, self.quick_mode.name)
 
@@ -108,7 +101,9 @@ class System:
             circulation = self.circulation
 
         if self.holiday_mode.active:
-            return self.holiday_mode.active_mode
+            active_mode = self.holiday_mode.active_mode
+            active_mode.target_temperature = None
+            return active_mode
 
         if self.quick_mode and self.quick_mode.for_circulation:
             if self.quick_mode == QuickMode.QM_SYSTEM_OFF:

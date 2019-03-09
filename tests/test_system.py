@@ -2,7 +2,7 @@ import datetime
 import unittest
 
 from vr900connector.model import System, TimeProgram, TimeProgramDaySetting, TimeProgramDay, QuickMode, QuickVeto, \
-    HolidayMode, Room, HotWater, Zone, Constants
+    HolidayMode, Room, HotWater, Zone, Constants, Circulation
 
 
 class SystemTest(unittest.TestCase):
@@ -391,6 +391,99 @@ class SystemTest(unittest.TestCase):
 
         self.assertEqual(QuickMode.QM_VENTILATION_BOOST.name, active_mode.current_mode)
         self.assertEqual(Zone.MIN_TEMP, active_mode.target_temperature)
+
+    def test_get_active_mode_circulation_hot_water_boost(self):
+        timeprogram_day_setting = TimeProgramDaySetting('00:00', None, Constants.MODE_ON)
+        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
+        timeprogram_days = {
+            'monday': timeprogram_day,
+            'tuesday': timeprogram_day,
+            'wednesday': timeprogram_day,
+            'thursday': timeprogram_day,
+            'friday': timeprogram_day,
+            'saturday': timeprogram_day,
+            'sunday': timeprogram_day,
+        }
+        timeprogram = TimeProgram(timeprogram_days)
+
+        circulation = Circulation('id', 'name', timeprogram, Constants.MODE_AUTO)
+        system = System(None, None, [], None, None, circulation, 5, QuickMode.QM_HOTWATER_BOOST)
+
+        active_mode = system.get_active_mode_circulation()
+
+        self.assertEqual(QuickMode.QM_HOTWATER_BOOST.name, active_mode.current_mode)
+        self.assertIsNone(active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
+
+    def test_get_active_mode_circulation_off(self):
+        timeprogram_day_setting = TimeProgramDaySetting('00:00', None, Constants.MODE_ON)
+        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
+        timeprogram_days = {
+            'monday': timeprogram_day,
+            'tuesday': timeprogram_day,
+            'wednesday': timeprogram_day,
+            'thursday': timeprogram_day,
+            'friday': timeprogram_day,
+            'saturday': timeprogram_day,
+            'sunday': timeprogram_day,
+        }
+        timeprogram = TimeProgram(timeprogram_days)
+
+        circulation = Circulation('id', 'name', timeprogram, Constants.MODE_AUTO)
+        system = System(None, None, [], None, None, circulation, 5, QuickMode.QM_SYSTEM_OFF)
+
+        active_mode = system.get_active_mode_circulation()
+
+        self.assertEqual(QuickMode.QM_SYSTEM_OFF.name, active_mode.current_mode)
+        self.assertIsNone(active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
+
+    def test_get_active_mode_circulation_holiday(self):
+        timeprogram_day_setting = TimeProgramDaySetting('00:00', None, Constants.MODE_ON)
+        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
+        timeprogram_days = {
+            'monday': timeprogram_day,
+            'tuesday': timeprogram_day,
+            'wednesday': timeprogram_day,
+            'thursday': timeprogram_day,
+            'friday': timeprogram_day,
+            'saturday': timeprogram_day,
+            'sunday': timeprogram_day,
+        }
+        timeprogram = TimeProgram(timeprogram_days)
+
+        circulation = Circulation('id', 'name', timeprogram, Constants.MODE_AUTO)
+        holiday_mode = HolidayMode(True, datetime.date.today(), datetime.date.today(), 10)
+        system = System(holiday_mode, None, [], None, None, circulation, 5, None)
+
+        active_mode = system.get_active_mode_circulation()
+
+        self.assertEqual(Constants.HOLIDAY_MODE, active_mode.current_mode)
+        self.assertIsNone(active_mode.target_temperature)
+        self.assertIsNone(active_mode.sub_mode)
+
+    def test_get_active_mode_circulation_auto(self):
+        timeprogram_day_setting = TimeProgramDaySetting('00:00', None, Constants.MODE_ON)
+        timeprogram_day = TimeProgramDay([timeprogram_day_setting])
+        timeprogram_days = {
+            'monday': timeprogram_day,
+            'tuesday': timeprogram_day,
+            'wednesday': timeprogram_day,
+            'thursday': timeprogram_day,
+            'friday': timeprogram_day,
+            'saturday': timeprogram_day,
+            'sunday': timeprogram_day,
+        }
+        timeprogram = TimeProgram(timeprogram_days)
+
+        circulation = Circulation('id', 'name', timeprogram, Constants.MODE_AUTO)
+        system = System(None, None, [], None, None, circulation, 5, None)
+
+        active_mode = system.get_active_mode_circulation()
+
+        self.assertEqual(Constants.MODE_AUTO, active_mode.current_mode)
+        self.assertIsNone(active_mode.target_temperature)
+        self.assertEqual(Constants.MODE_ON, active_mode.sub_mode)
 
 
 if __name__ == '__main__':

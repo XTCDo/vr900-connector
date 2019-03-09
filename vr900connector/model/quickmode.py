@@ -1,6 +1,5 @@
 from enum import Enum
 
-from model import Zone
 from . import Constants
 
 
@@ -43,7 +42,7 @@ class QuickMode(Enum):
     return to the pre-set mode
     """
 
-    QM_VENTILATION_BOOST = (Constants.QM_VENTILATION_BOOST, True, True, False, False)
+    QM_VENTILATION_BOOST = (Constants.QM_VENTILATION_BOOST, True, False, False, False)
     """
     This advanced function switches the zone off for 30 minutes. The frost protection function is activated, and hot 
     water  generation and circulation remain active. Ventilation is activated and works at the highest ventilation 
