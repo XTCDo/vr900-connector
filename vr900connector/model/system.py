@@ -50,8 +50,8 @@ class System:
         self.outdoor_temperature = outdoor_temperature
         self.quick_mode = quick_mode
 
-    def get_zone(self, zone_id: int) -> Zone:
-        return self._zones_dict[str(zone_id)]
+    def get_zone(self, zone_id: str) -> Zone:
+        return self._zones_dict[zone_id]
 
     def get_room(self, room_id: int) -> Room:
         return self._rooms_dict[int(room_id)]

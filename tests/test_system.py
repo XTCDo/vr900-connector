@@ -486,13 +486,13 @@ class SystemTest(unittest.TestCase):
         self.assertEqual(Constants.MODE_ON, active_mode.sub_mode)
 
     def test_room_handling_with_rooms(self):
-        r1 = Room("id1", "name1", None, None, None, None, None, False, False, [])
-        r2 = Room("id2", "name1", None, None, None, None, None, False, False, [])
+        r1 = Room(10, "name1", None, None, None, None, None, False, False, [])
+        r2 = Room(11, "name1", None, None, None, None, None, False, False, [])
         system = System(None, None, [], [r1, r2], None, None, 5, None)
 
         self.assertEqual(2, len(system.rooms))
-        self.assertEqual(r1, system._rooms_dict.get("id1"))
-        self.assertEqual(r2, system._rooms_dict.get("id2"))
+        self.assertEqual(r1, system.get_room(10))
+        self.assertEqual(r2, system.get_room(11))
 
     def test_room_handling_with_no_rooms(self):
         system = System(None, None, [], [], None, None, 5, None)
@@ -506,8 +506,8 @@ class SystemTest(unittest.TestCase):
         system = System(None, None, [z1, z2], [], None, None, 5, None)
 
         self.assertEqual(2, len(system.zones))
-        self.assertEqual(z1, system._zones_dict.get("id1"))
-        self.assertEqual(z2, system._zones_dict.get("id2"))
+        self.assertEqual(z1, system.get_zone("id1"))
+        self.assertEqual(z2, system.get_zone("id2"))
 
     def test_zone_handling_with_no_zones(self):
         system = System(None, None, [], [], None, None, 5, None)
