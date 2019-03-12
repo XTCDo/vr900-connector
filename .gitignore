@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+scripts/testdir/
+scripts/do_print_responses
