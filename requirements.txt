@@ -2,3 +2,5 @@ responses
 requests
 jsonpickle
 pathlib2
+kafka
+kafka-python
