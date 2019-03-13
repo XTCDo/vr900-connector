@@ -31,7 +31,8 @@ def print_responses(user, password, result_dir):
     #    secure_call(connector, constant.HVAC_STATE_URL, file)
 
     try:
-        print(json.dumps(connector.get(constant.LIVE_REPORT_URL), indent=1))
+        live_report_data = connector.get(constant.LIVE_REPORT_URL)['body']['devices'][0]['reports'][0]['value']
+        print(json.dumps(live_report_data, indent=1))
     except Exception as e:
         print(e)
 
