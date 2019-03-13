@@ -55,7 +55,11 @@ def secure_call(connector, url, file):
 
 def extract_data_from_json(json_data):
     flow_temperature_sensor_value = json_data['body']['devices'][0]['reports'][0]['value']
+    water_pressure_sensor_value = json_data['body']['devices'][1]['reports'][0]['value']
+    domestic_hot_water_tank_temperature_value = json_data['body']['devices'][2]['reports'][0]['value']
     print(flow_temperature_sensor_value)
+    print(water_pressure_sensor_value)
+    print(domestic_hot_water_tank_temperature_value)
 
 
 
