@@ -1,13 +1,14 @@
 import uuid
 import tempfile
 import json
+from time import sleep
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from vr900connector.api import ApiConnector, constant
 
+from kafka import KafkaProducer
 
-def print_responses(user, password):
-    connector = ApiConnector(user, password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
 
+def print_responses(connector):
     try:
         live_report_data = connector.get(constant.LIVE_REPORT_URL)
         print(extract_data_from_json(live_report_data))
@@ -42,4 +43,13 @@ if __name__ == '__main__':
                         required=True)
 
     args = parser.parse_args()
-    print_responses(args.username, args.password)
+
+    connector = ApiConnector(args.username, args.password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
+
+    producer = KafkaProducer(bootstrap_servers='localhost:9092')
+
+    while True:
+        message = extract_data_from_json(connector.get(constant.LIVE_REPORT_URL))
+        print(message)
+        producer.send('vaillant-input', message.encode('utf-8'))
+        sleep(1)
