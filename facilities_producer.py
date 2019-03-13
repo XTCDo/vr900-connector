@@ -32,8 +32,7 @@ def print_responses(user, password, result_dir):
 
     try:
         live_report_data = connector.get(constant.LIVE_REPORT_URL)
-        extract_data_from_json(live_report_data)
-        #print(json.dumps(live_report_data, indent=1))
+        print(extract_data_from_json(live_report_data))
     except Exception as e:
         print(e)
 
@@ -63,7 +62,8 @@ def extract_data_from_json(json_data):
         "domestic_hot_water_tank_temperature_value" : domestic_hot_water_tank_temperature_value
     }
     extracted_data = json.dumps(extracted_data)
-    print(extracted_data)
+    return extracted_data
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
