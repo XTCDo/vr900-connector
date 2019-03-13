@@ -18,9 +18,10 @@ def print_responses(user, password):
 
 
 def extract_data_from_json(json_data):
-    flow_temperature_sensor_value = json_data['body']['devices'][0]['reports'][0]['value']
-    water_pressure_sensor_value = json_data['body']['devices'][1]['reports'][0]['value']
-    domestic_hot_water_tank_temperature_value = json_data['body']['devices'][2]['reports'][0]['value']
+    json_data = json_data['body']['devices']
+    flow_temperature_sensor_value = json_data[0]['reports'][0]['value']
+    water_pressure_sensor_value = json_data[1]['reports'][0]['value']
+    domestic_hot_water_tank_temperature_value = json_data[2]['reports'][0]['value']
     extracted_data = {
         "flow_temperature_sensor_value" : flow_temperature_sensor_value,
         "water_pressure_sensor_value" : water_pressure_sensor_value,
