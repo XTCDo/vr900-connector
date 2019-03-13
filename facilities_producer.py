@@ -52,4 +52,4 @@ if __name__ == '__main__':
         message = extract_data_from_json(connector.get(constant.LIVE_REPORT_URL))
         print(message)
         producer.send('vaillant-input', message.encode('utf-8'))
-        sleep(1)
+        sleep(60)
