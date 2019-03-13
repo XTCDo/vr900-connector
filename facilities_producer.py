@@ -14,22 +14,6 @@ def print_responses(user, password, result_dir):
     shutil.rmtree(result_dir, ignore_errors=True)
     os.mkdir(result_dir)
 
-    #with open(result_dir + '/facilities', 'w+') as file:
-    #    secure_call(connector, constant.FACILITIES_URL, file)
-
-    #with open(result_dir + '/system_status', 'w+') as file:
-    #    secure_call(connector, constant.SYSTEM_STATUS_URL, file)
-
-    # Belangrijkste
-    #with open(result_dir + '/live_report', 'w+') as file:
-    #    secure_call(connector, constant.LIVE_REPORT_URL, file)
-
-    #with open(result_dir + '/system_control', 'w+') as file:
-    #    secure_call(connector, constant.SYSTEM_CONTROL_URL, file)
-
-    #with open(result_dir + '/hvac_state', 'w+') as file:
-    #    secure_call(connector, constant.HVAC_STATE_URL, file)
-
     try:
         live_report_data = connector.get(constant.LIVE_REPORT_URL)
         print(extract_data_from_json(live_report_data))
