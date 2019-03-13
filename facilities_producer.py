@@ -8,11 +8,8 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from vr900connector.api import ApiConnector, ApiError, constant
 
 
-def print_responses(user, password, result_dir):
+def print_responses(user, password):
     connector = ApiConnector(user, password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
-
-    shutil.rmtree(result_dir, ignore_errors=True)
-    os.mkdir(result_dir)
 
     try:
         live_report_data = connector.get(constant.LIVE_REPORT_URL)
@@ -43,8 +40,6 @@ if __name__ == '__main__':
                         required=True)
     parser.add_argument('--password', '-p', help='Password used to connect', dest='password',
                         required=True)
-    parser.add_argument('--dir', '-d', help='Where to store files', dest='dir',
-                        required=True)
 
     args = parser.parse_args()
-    print_responses(args.username, args.password, args.dir)
+    print_responses(args.username, args.password)
