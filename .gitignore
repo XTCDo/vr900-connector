@@ -109,3 +109,4 @@ venv.bak/
 # Own stuff
 run
 scripts/testdir/
+scripts/do_print_responses
