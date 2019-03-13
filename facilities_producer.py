@@ -57,11 +57,13 @@ def extract_data_from_json(json_data):
     flow_temperature_sensor_value = json_data['body']['devices'][0]['reports'][0]['value']
     water_pressure_sensor_value = json_data['body']['devices'][1]['reports'][0]['value']
     domestic_hot_water_tank_temperature_value = json_data['body']['devices'][2]['reports'][0]['value']
-    print(flow_temperature_sensor_value)
-    print(water_pressure_sensor_value)
-    print(domestic_hot_water_tank_temperature_value)
-
-
+    extracted_data = {
+        "flow_temperature_sensor_value" : flow_temperature_sensor_value,
+        "water_pressure_sensor_value" : water_pressure_sensor_value,
+        "domestic_hot_water_tank_temperature_value" : domestic_hot_water_tank_temperature_value
+    }
+    extracted_data = json.dumps(extracted_data)
+    print(extracted_data)
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
