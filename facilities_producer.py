@@ -39,19 +39,6 @@ def print_responses(user, password, result_dir):
     connector.logout()
 
 
-def secure_call(connector, url, file):
-    try:
-        file.write(json.dumps(connector.get(url), indent=4))
-    except ApiError as e:
-        if e.response is not None:
-            file.write(e.response.text)
-        else:
-            file.write(e.message + '\n')
-            traceback.print_exc(file=file)
-    except Exception as e:
-        traceback.print_exc(file=file)
-
-
 def extract_data_from_json(json_data):
     flow_temperature_sensor_value = json_data['body']['devices'][0]['reports'][0]['value']
     water_pressure_sensor_value = json_data['body']['devices'][1]['reports'][0]['value']
