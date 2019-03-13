@@ -1,11 +1,8 @@
 import uuid
-import traceback
-import os
 import tempfile
 import json
-import shutil
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from vr900connector.api import ApiConnector, ApiError, constant
+from vr900connector.api import ApiConnector, constant
 
 
 def print_responses(user, password):
