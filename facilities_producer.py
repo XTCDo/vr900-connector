@@ -8,17 +8,8 @@ from vr900connector.api import ApiConnector, constant
 from kafka import KafkaProducer
 
 
-def print_responses(connector):
-    try:
-        live_report_data = connector.get(constant.LIVE_REPORT_URL)
-        print(extract_data_from_json(live_report_data))
-    except Exception as e:
-        print(e)
-
-    connector.logout()
-
-
 def extract_data_from_json(json_data):
+    """Helper function to extract three sensor values out of a json object"""
     json_data = json_data['body']['devices']
     flow_temperature_sensor_value = json_data[0]['reports'][0]['value']
     water_pressure_sensor_value = json_data[1]['reports'][0]['value']
@@ -34,7 +25,9 @@ def extract_data_from_json(json_data):
     return extracted_data
 
 
+# If the program is run standalone use this as main loop
 if __name__ == '__main__':
+    # ArgumentParser is used to get the username and password from the command line
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument('--username', '-u', help='Username used to connect', dest='username',
@@ -44,12 +37,21 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # Create the ApiConnector using the provided username and password and make it use a temporary directory
     connector = ApiConnector(args.username, args.password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
 
+    # Create a KafkaProducer for local usage
     producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
     while True:
-        message = extract_data_from_json(connector.get(constant.LIVE_REPORT_URL))
+        # Get json data from ApiConnector and then extract the data from it
+        json_data = connector.get(constant.LIVE_REPORT_URL)
+        message = extract_data_from_json(connector.get(json_data))
+
         print(message)
+
+        # Send extracted json data to the vaillant-input Kafka topic
         producer.send('vaillant-input', message.encode('utf-8'))
-        sleep(1)
+
+        # Wait one minute before requesting data again, it is presumed that the vaillant system updates every minute
+        sleep(60)
