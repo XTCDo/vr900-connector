@@ -10,17 +10,21 @@ from kafka import KafkaProducer
 
 def extract_data_from_json(json_data):
     """Helper function to extract three sensor values out of a json object"""
+
+    # Do extraction and store in variables
     json_data = json_data['body']['devices']
     flow_temperature_sensor_value = json_data[0]['reports'][0]['value']
     water_pressure_sensor_value = json_data[1]['reports'][0]['value']
     domestic_hot_water_tank_temperature_value = json_data[2]['reports'][0]['value']
 
+    # Put variables in a dictionary
     extracted_data = {
         "flow_temperature_sensor_value": flow_temperature_sensor_value,
         "water_pressure_sensor_value": water_pressure_sensor_value,
         "domestic_hot_water_tank_temperature_value": domestic_hot_water_tank_temperature_value
     }
 
+    # Turn dictionary in JSON string
     extracted_data = json.dumps(extracted_data)
     return extracted_data
 
