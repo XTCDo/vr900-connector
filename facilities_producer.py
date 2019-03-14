@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
     while True:
         # Get json data from ApiConnector and then extract the data from it
-        json_data = connector.get(constant.LIVE_REPORT_URL)
-        message = extract_data_from_json(connector.get(json_data))
+        vaillant_data_json = connector.get(constant.LIVE_REPORT_URL)
+        message = extract_data_from_json(connector.get(vaillant_data_json))
 
         print(message)
 
