@@ -8,16 +8,6 @@ from vr900connector.api import ApiConnector, constant
 from kafka import KafkaProducer
 
 
-def print_responses(connector):
-    try:
-        live_report_data = connector.get(constant.LIVE_REPORT_URL)
-        print(extract_data_from_json(live_report_data))
-    except Exception as e:
-        print(e)
-
-    connector.logout()
-
-
 def extract_data_from_json(json_data):
     json_data = json_data['body']['devices']
     flow_temperature_sensor_value = json_data[0]['reports'][0]['value']
