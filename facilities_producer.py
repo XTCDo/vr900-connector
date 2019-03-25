@@ -56,6 +56,4 @@ if __name__ == '__main__':
 
         # Send extracted json data to the vaillant-input Kafka topic
         producer.send('vaillant-input', message.encode('utf-8'))
-
-        # Wait one minute before requesting data again, it is presumed that the vaillant system updates every minute
         sleep(60)

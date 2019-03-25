@@ -110,3 +110,4 @@ venv.bak/
 run
 scripts/testdir/
 scripts/do_print_responses
+logs/
