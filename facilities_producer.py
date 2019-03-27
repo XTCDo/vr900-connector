@@ -41,13 +41,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # Create the ApiConnector using the provided username and password and make it use a temporary directory
-    connector = ApiConnector(args.username, args.password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
-
     # Create a KafkaProducer for local usage
     producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
     while True:
+        # Create the ApiConnector using the provided username and password and make it use a temporary directory
+        # Always make a new connector to make sure new data is received
+        # yes this is actually necessary
+        # yes this it is stupid to have to do it this way
+        connector = ApiConnector(args.username, args.password, file_dir=tempfile.gettempdir() + "/" + str(uuid.uuid4()))
+
         # Get json data from ApiConnector and then extract the data from it
         vaillant_data_json = connector.get(constant.LIVE_REPORT_URL)
 
